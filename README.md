@@ -1,4 +1,4 @@
-# ATLAS Prime — Decision Operating System (V11 clean rebuild)
+# ATLAS Prime — Decision Operating System (V11.1 · full-feature merge)
 
 **Open `index.html` in any browser. That's the app.** DEMO mode: seeded, deterministic, watermarked synthetic data — no broker, no live claims.
 
@@ -16,15 +16,15 @@ ATLAS is a decision operating system for an AI-assisted trading desk, not a coll
 
 ## What was rebuilt and why
 
-The previous artifact (`legacy/reference/`, V7→V10) accreted **63 routes, 96 competing view definitions, a 9-deep render patch chain, 464 inline onclick handlers**, and a QA suite that fabricated its own pass results. Full forensics: `docs/legacy-route-map.md`, `docs/legacy-data-truth-audit.md`, `docs/legacy-button-audit.csv`.
+The previous artifact (`legacy/reference/`, V6→V10) accreted **63 routes, 96 competing view definitions, a 9-deep render patch chain, 464 inline onclick handlers**, and a QA suite that fabricated its own pass results. Full forensics: `docs/legacy-route-map.md`, `docs/legacy-data-truth-audit.md`, `docs/legacy-button-audit.csv`. **Every legacy capability is preserved** — the complete 63-route → V11.1 map is `docs/legacy-feature-preservation.md`.
 
 V11 is a ground-up rebuild: seven domains (ADR-001), a command contract so dead buttons are structurally impossible (ADR-003), a simulated server boundary whose contracts match the target `/v1/*` API for a 1:1 backend swap, and an in-page integrity suite that runs **real assertions** and renders whatever actually happens.
 
 ## Verification (this build, in a real browser)
 
-- 36/36 workspaces render · **0 console errors**
+- 38/38 workspaces render · **0 console errors**
 - 12/12 integrity checks (enum canon, 5R gate blocks sub-5R, spread veto blocks OPT-007 breach, token single-use + hash-bound, R recomputed from levels, all commands wired)
-- Kill-switch halt/resume, packet decision → journal → token, stale-data drill → risk-engine denial: all exercised end-to-end via Playwright
+- Kill-switch halt/resume, packet decision → journal → token, stale-data drill → risk-engine denial, vision wall, replay scrubber, committee rail, autonomy-lab corpus, and the teach loop (lesson → quiz-back → HUM chunk → court): all exercised end-to-end via Playwright
 
 ## Honesty rules
 

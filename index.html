@@ -1030,13 +1030,13 @@ const DOMAINS={
   research:{ico:'◉',label:'RESEARCH',key:'3',purpose:'One symbol, every angle — synchronized',
     ws:[{id:'overview',label:'Overview'},{id:'chart',label:'Chart'},{id:'structure',label:'Structure & Liquidity'},{id:'wyckoff',label:'Wyckoff & Volume'},{id:'options',label:'Options & Contract'},{id:'flow',label:'Flow'},{id:'catalysts',label:'Catalysts'},{id:'history',label:'ATLAS History'}]},
   decisions:{ico:'◆',label:'DECISIONS',key:'4',purpose:'Evidence → governed decision',
-    ws:[{id:'queue',label:'Verification Queue'},{id:'packet',label:'Packet Detail'},{id:'riskproof',label:'Risk Proof'},{id:'history',label:'Decision History'}]},
+    ws:[{id:'queue',label:'Verification Queue'},{id:'packet',label:'Packet Detail'},{id:'rail',label:'Committee Rail'},{id:'riskproof',label:'Risk Proof'},{id:'history',label:'Decision History'}]},
   portfolio:{ico:'▤',label:'PORTFOLIO',key:'5',purpose:'How is capital deployed and protected?',
     ws:[{id:'positions',label:'Positions'},{id:'orders',label:'Orders & Fills'},{id:'risk',label:'Risk Cockpit'},{id:'exposure',label:'Exposure'},{id:'account',label:'Paper Account'}]},
   review:{ico:'↻',label:'REVIEW',key:'6',purpose:'Are we getting better, with evidence?',
     ws:[{id:'journal',label:'Journal'},{id:'autopsy',label:'Opportunity Autopsy'},{id:'performance',label:'Performance & Calibration'},{id:'court',label:'Learning Court'},{id:'replay',label:'Replay & Backtest'}]},
   system:{ico:'⚙',label:'SYSTEM',key:'7',purpose:'Who can do what · what happened · is it healthy?',
-    ws:[{id:'health',label:'Health & Freshness'},{id:'agents',label:'Agent Council'},{id:'config',label:'Config & Laws'},{id:'integrations',label:'Integrations'},{id:'permissions',label:'Permissions'},{id:'audit',label:'Audit Ledger'},{id:'integrity',label:'Integrity Checks'},{id:'autonomy',label:'Autonomy Lab'}]},
+    ws:[{id:'health',label:'Health & Freshness'},{id:'agents',label:'Agent Council'},{id:'knowledge',label:'Knowledge Base'},{id:'config',label:'Config & Laws'},{id:'integrations',label:'Integrations'},{id:'permissions',label:'Permissions'},{id:'audit',label:'Audit Ledger'},{id:'integrity',label:'Integrity Checks'},{id:'autonomy',label:'Autonomy Lab'}]},
 };
 
 /* ═══════════ shell renderers ═══════════ */
@@ -1329,6 +1329,16 @@ VIEWS['markets.regime']=function(){
   h+=panel('SCENARIO MEMORY — playbook × regime expectancy','1.28M scenario replays; the desk trades only cells that survive',
     tbl(SCENARIO.grid[0].map((c,i)=>i?'>'+c:'Playbook'),SCENARIO.grid.slice(1).map(r=>'<tr><td>'+r[0]+'</td>'+r.slice(1).map(x=>'<td class="r num '+(x.startsWith('−')||x.startsWith('-')?'dn':'up')+'">'+x+'</td>').join('')+'</tr>').join(''))+
     '<div class="banner blk" style="margin:10px 12px"><span class="bico">⛔</span><div><b>Standing prohibition:</b> '+SCENARIO.ban+'</div></div>',{flush:true});
+  h+=panel('MORNING BRIEF — 08:30 ET · S07 Daily Setup Report','regime, ranked setups, landmines, and what the desk learned overnight',
+    '<div class="grid g2"><div>'+
+    kv('POSTURE','Risk-on rotation · long leaders in leading sectors · counter-regime shorts capped at paper')+
+    kv('RANKED A-CLASS','1. NVDA MMBM Reversal (packet live) · 2. TSLA OTE Continuation (armed, needs MSS)')+
+    kv('WATCH-CLASS','AMD Breaker Retest (contract-blocked, re-run 11:00) · QQQ PD Rotation (bias unresolved)')+
+    '</div><div>'+
+    kv('LANDMINES','FOMC minutes 14:00 (scalp time-stop 13:45) · CPI T+2d arms blackout T+1d')+
+    kv('OVERNIGHT LEARNING','LS-121 A/B 14/30 samples · golden-packet regression 48/48 on v13.2')+
+    kv('COST OF FIRM','≈$41/day LLM tiered+cached · scan economics: 93%+ rejected before any model call')+
+    '</div></div>');
   return h;
 };
 VIEWS['markets.scanner']=function(){
@@ -1344,12 +1354,17 @@ VIEWS['markets.scanner']=function(){
   h+='</div>';
   return h;
 };
-CMD.define({id:'research.open',label:'Open dossier',purpose:'Full symbol workspace in Research',audit:false,run:a=>{S.sym=a;go('research','overview')}});
+CMD.define({id:'research.open',label:'Open dossier',purpose:'Full symbol workspace in Research',audit:false,run:a=>{
+  if(!symBy(a)){UI.toast(a+' is heartbeat-tier — not promoted. Deep dossiers are earned by evidence, not clicks (promotion rules in Scanner).','','FUNNEL');return}
+  S.sym=a;go('research','overview')}});
 VIEWS['markets.watch']=function(){
   let h=vhead('MARKETS · promoted watchlist','Watchlist',
     'Only promoted symbols. Each row states its playbook, lifecycle stage, and exactly what remains unmet — nothing is ambiguous about why it hasn’t triggered.');
   h+=panel('','',tbl(['Sym','>Last','>Chg','>RVOL','>RS','>IVR','Playbook','Lifecycle','Unmet conditions (verbatim from playbook FSM)'],
     SYMS.map(s=>'<tr class="click" data-cmd="research.open" data-arg="'+s.sym+'"><td class="mono"><b>'+s.sym+'</b></td><td class="r num">'+U.fmt(s.px)+'</td><td class="r num '+(s.chg>=0?'up':'dn')+'">'+U.pct(s.chg)+'</td><td class="r num">'+U.fmt(s.rvol,1)+'×</td><td class="r num">'+s.rs+'</td><td class="r num">'+s.ivr+'</td><td>'+s.setup+'</td><td>'+lc(s.fsm)+'</td><td class="i1" style="font-size:10.5px">'+(s.unmet.length?s.unmet.map(u=>'· '+U.esc(u)).join('<br>'):'<span class="up">all conditions met</span>')+'</td></tr>').join('')),{flush:true});
+  h+=panel('FULL COMMAND UNIVERSE — 24 instruments','deterministic heartbeat tier; promotion is earned by evidence, never by attention',
+    tbl(['Sym','Sector','>Last','>Chg','>RVOL','>RS','Playbook lens','Lifecycle'],
+      UNIVERSE24.map(u=>'<tr class="click'+(symBy(u.sym)?'':' dim')+'" data-cmd="research.open" data-arg="'+u.sym+'"><td class="mono"><b>'+u.sym+'</b></td><td class="i2" style="font-size:10px">'+u.sector+'</td><td class="r num">'+U.fmt(u.px)+'</td><td class="r num '+(u.chg>=0?'up':'dn')+'">'+U.pct(u.chg)+'</td><td class="r num">'+U.fmt(u.rvol,1)+'×</td><td class="r num">'+u.rs+'</td><td class="i1" style="font-size:10.5px">'+u.setup+'</td><td>'+lc(u.fsm)+'</td></tr>').join('')),{flush:true});
   return h;
 };
 VIEWS['markets.calendar']=function(){
@@ -1389,21 +1404,7 @@ VIEWS['research.overview']=function(){
   if(pk)h+='<div class="banner gold"><span class="bico">◆</span><div><b>'+pk.id+'</b> exists for this symbol — '+lc(pk.state)+' · grade '+pk.grade+'. '+CMD.btn('nav.decisions.packet',pk.id,'sm gold','Open packet')+'</div></div>';
   return h;
 };
-VIEWS['research.chart']=function(){
-  let h=rHead('multi-timeframe chart','Server-produced annotations only — every zone cites its detector (DET-041 FVG · DET-052 OB · DET-044 pools)');
-  h+=panel('PRIMARY CHART — plan levels + annotations','press F for focus mode',
-    '<canvas id="rc-main" class="cv" style="height:340px"></canvas>'+
-    '<div class="legend"><span><i style="background:rgba(90,167,255,.5)"></i>FVG (DET-041)</span><span><i style="background:rgba(47,214,160,.5)"></i>Order block (DET-052)</span><span><i style="background:#FF4D5F"></i>Structural stop</span><span><i style="background:#2FD6A0"></i>Targets · T2 = 5R proof level</span></div>');
-  drawPrice('rc-main',S.sym,{h:340,full:true});
-  h+='<div class="grid g2">';
-  h+=panel('TIMEFRAME LADDER','higher timeframes justify; lower timeframes trigger (AX-M7)',
-    tbl(['TF','Bias','Read'],[['1M','UP','Above protected low — campaign intact'],['1W','UP','Protected low 168.40 · no ladder conflict'],['1D','UP','BOS 03-12 · discount of dealing range'],['4H','DISCOUNT','Phase D re-accumulation · spring + test done'],['1H','SHIFTING','Reclaim through mid-range'],['15m','OTE','62–79% zone tagged · 70.5% is the A+ level'],['5m','TRIGGER','MSS 10:18 with displacement 74/100'],['1m','ENTRY','FVG first-return — earlier is front-running, later is worse R']].map(r=>'<tr><td class="mono">'+r[0]+'</td><td>'+chip(r[1],r[1]==='UP'?'ch-ok':r[1]==='TRIGGER'||r[1]==='ENTRY'?'ch-live':'ch-info','▲')+'</td><td class="i1" style="font-size:11px">'+r[2]+'</td></tr>').join('')),{flush:true});
-  h+=panel('ALIGNMENT VERDICT','net of the ladder',
-    '<div style="font-size:15px;font-family:var(--mono);color:var(--pos);margin-bottom:6px">LONG · FULL STACK ALIGNED</div>'+
-    '<div class="i1" style="font-size:11.5px;line-height:1.6">6+ of 8 timeframes constructive. Doctrine: ≥6 full alignment · ≥4 majority · ≥2 mixed/wait · below that, stand aside. Lower timeframes may trigger; higher timeframes must justify.</div>');
-  h+='</div>';
-  return h;
-};
+/* research.chart is defined in the merge module (part-15) — one view, one definition */
 VIEWS['research.structure']=function(){
   const s=symBy(S.sym);
   let h=rHead('structure & liquidity','Who is trapped, where the draw is, and what invalidates — LAW-001/002/003 made visible');
@@ -1439,6 +1440,13 @@ VIEWS['research.options']=function(){
     :s.sym==='AMD'?
       '<div class="banner blk"><span class="bico">⛔</span><div><b>VETO — OPT-007.</b> 175C spread 8.9% > '+ck('options.max_spread_pct')+'% cap. An impossible contract kills an A+ chart. S14 dissent: WAIT for spread normalization (desk re-runs 11:00) rather than terminal reject — that dissent became LS-121.</div></div>'
     :'<div class="empty"><div class="e1">NO CONTRACT UNDER EVALUATION</div>Contract selection begins when the setup reaches ARMED.</div>');
+  h+=panel('CHAIN — 21DTE · gates evaluated per row','spread ≤ '+ck('options.max_spread_pct')+'% · OI ≥ '+ck('options.min_oi')+' · vol ≥ '+ck('options.min_volume')+' · <span class="demo-wm">demo chain</span>',
+    (function(){const s=symBy(S.sym),r=localRng('chain-'+S.sym);if(!s.levels.entry)return '<div class="empty">No chain under evaluation.</div>';
+      let rows='';for(let i=-3;i<=4;i++){const k=Math.round(s.px/2.5)*2.5+i*2.5;const spr=1.8+Math.abs(i)*1.4+r()*2.2;const oi=Math.round(16000/(1+Math.abs(i)))-Math.round(r()*900);const vol=Math.round(oi*0.42*(0.5+r()));const delta=U.clamp(0.5-((k-s.px)/s.px)*6,0.04,0.96);
+        const veto=spr>ck('options.max_spread_pct')?'OPT-007':oi<ck('options.min_oi')?'OPT-008':vol<ck('options.min_volume')?'OPT-009':null;
+        const chosen=S.sym==='NVDA'&&Math.abs(k-200)<0.01;
+        rows+='<tr'+(chosen?' style="background:var(--live-bg)"':veto?' class="dim"':'')+'><td class="r num">'+k.toFixed(1)+'C</td><td class="r num">'+delta.toFixed(2)+'</td><td class="r num">'+U.fmt(spr,1)+'%</td><td class="r num">'+U.int(oi)+'</td><td class="r num">'+U.int(vol)+'</td><td>'+(chosen?chip('CHOSEN','ch-live','◆'):veto?chip(veto+' VETO','ch-blk','✕'):chip('PASS','ch-ok','✓'))+'</td></tr>'}
+      return tbl(['Strike','>Δ','>Spread','>OI','>Volume','Gate'],rows)})(),{flush:true});
   h+='<div class="grid g2">';
   h+=panel('DTE / PERSONALITY ALIGNMENT','LAW-016 — horizon, ladder, and DTE stay aligned',
     tbl(['Personality','DTE band','This setup'],[['Scalp','0–3','—'],['Intraday','0–2','—'],['Swing','14–45','✓ 21DTE matches swing class']].map(r=>'<tr><td>'+r[0]+'</td><td class="mono">'+r[1]+'</td><td class="i1">'+r[2]+'</td></tr>').join('')),{flush:true});
@@ -1455,7 +1463,13 @@ VIEWS['research.flow']=function(){
      ['10:19','SWEEP','200C 21DTE','$1.1M','ASK','Second wave — same strike'],
      ['09:52','BLOCK','195P 14DTE','$0.8M','BID','Put seller — consistent with support holding'],
     ].map(r=>'<tr><td class="mono">'+r[0]+'</td><td>'+chip(r[1],r[1]==='SWEEP'?'ch-live':'ch-info','◆')+'</td><td class="mono">'+r[2]+'</td><td class="r num">'+r[3]+'</td><td class="mono">'+r[4]+'</td><td class="i1" style="font-size:11px">'+r[5]+'</td></tr>').join('')),{flush:true});
-  h+='<div class="banner info"><span class="bico">i</span><div>S23 vote on the live packet: <b>advisory</b> — “2 sweeps at ask in 200C today — confirmation-tier only.” Flow agreeing does not upgrade a grade; flow disagreeing forces a named conflict.</div></div>';
+  h+=panel('SESSION TAPE — all symbols','sweeps and blocks across the promoted set · <span class="demo-wm">demo twin</span>',
+    (function(){const r=localRng('tape-'+CLOCK.hm().slice(0,2));let rows='';
+      const names=['NVDA','TSLA','AMD','META','QQQ','SPY','NVDA','AAPL','AMZN','NVDA','MSFT','TSLA'];
+      for(let i=0;i<12;i++){const sym=names[i];const sweep=r()>0.4;const call=r()>0.35;const prem=(0.3+r()*2.4);
+        rows+='<tr><td class="mono">'+(10*60+31-i*3<600?'09':'10')+':'+String((31-i*3+60)%60).padStart(2,'0')+'</td><td class="mono"><b>'+sym+'</b></td><td>'+chip(sweep?'SWEEP':'BLOCK',sweep?'ch-live':'ch-info','◆')+'</td><td class="mono">'+(call?'C':'P')+' '+(r()>0.5?'21':'14')+'DTE</td><td class="r num">$'+U.fmt(prem,1)+'M</td><td class="mono">'+(r()>0.4?'ASK':'BID')+'</td><td class="i2" style="font-size:10px">'+(sweep?'multi-exchange aggression':'single print — negotiated')+'</td></tr>'}
+      return tbl(['Time','Sym','Type','Contract','>Premium','Side','Read'],rows)})(),{flush:true});
+  h+='<div class="banner info"><span class="bico">i</span><div>S23 vote on the live packet: <b>advisory</b> — “2 sweeps at ask in 200C today — confirmation-tier only.” Flow agreeing does not upgrade a grade; flow disagreeing forces a named conflict. Flow can never approve a trade.</div></div>';
   return h;
 };
 VIEWS['research.catalysts']=function(){
@@ -1699,6 +1713,8 @@ VIEWS['portfolio.account']=function(){
     stat('Drawdown',PROGRAM.dd,'auto-demotion is a feature')+'</div>';
   h+=panel('DESK EQUITY CURVE — paper','<span class="demo-wm">demo data</span>','<canvas id="pf-eq" class="cv" data-h="190"></canvas>');
   drawEquityCurve('pf-eq','desk',S.equity*0.93);
+  h+=panel('COMPOUNDING CONE — 140 seeded paths × 170 trades','honest label: seeded simulation from program stats, not a promise · <span class="demo-wm">demo</span>','<canvas id="pf-cone" class="cv" style="height:230px"></canvas>');
+  drawCone('pf-cone');
   h+=panel('COMPOUNDING PROGRAM — $1,000 → $100,000, staged and gated','promotion needs evidence; demotion is automatic. No stage skips, ever.',
     tbl(['Stage','Span','Risk / size','Evidence bar','Extra gate'],STAGES.map(st=>'<tr'+(st.s===PROGRAM.stage?' style="background:var(--live-bg)"':'')+'><td class="mono"><b>'+st.s+'</b>'+(st.s===PROGRAM.stage?' ◀ current':'')+'</td><td class="mono">'+st.span+'</td><td class="mono">'+st.risk+'</td><td class="i1" style="font-size:11px">'+st.need+'</td><td class="i2" style="font-size:11px">'+st.gate+'</td></tr>').join(''))+
     '<div class="i1" style="font-size:11px;padding:10px 12px">'+U.esc(PROGRAM.promo)+'</div>',{flush:true});
@@ -1739,6 +1755,8 @@ VIEWS['review.autopsy']=function(){
     '<div class="i1" style="font-size:11.5px;line-height:1.6;margin-bottom:8px">'+U.esc(a.finding)+'</div>'+
     kv('THE FIX',U.esc(a.fix))+kv('STATUS','<b>'+U.esc(a.status)+'</b>')+
     '</div></div>').join('');
+  h+=panel('SETUP ARCHIVE — every analyzed setup, shadow-tracked','“was passing correct?” is answered with data, not memory',
+    tbl(['ID','Sym','Decision','>Result / counterfactual','Playbook','Note'],ARCHIVE.map(a=>'<tr'+(String(a[5]).startsWith('MISS')?' style="background:var(--warn-bg)"':'')+'><td class="mono">'+a[0]+'</td><td class="mono"><b>'+a[1]+'</b></td><td>'+chip(a[2],a[2].startsWith('TAKEN')?'ch-ok':a[2]==='REJECTED'?'ch-neg':a[2]==='PASSED'?'ch-mut':'ch-info','·')+'</td><td class="r num">'+a[3]+'</td><td class="i1" style="font-size:10.5px">'+a[4]+'</td><td class="i2" style="font-size:10.5px">'+a[5]+'</td></tr>').join('')),{flush:true});
   h+='<div class="banner info"><span class="bico">i</span><div>'+U.esc(SHADOW_STATS.note)+'</div></div>';
   return h;
 };
@@ -1757,6 +1775,14 @@ VIEWS['review.performance']=function(){
     '<canvas id="rv-pareto" class="cv" data-h="185"></canvas>'+
     '<div class="i1" style="font-size:11px;margin-top:6px">Late-entry/chasing (31) + news misclassification (22) = 49% of all errors. Both have live fixes: the first-return entry gate and S18 source-credibility weighting (applied v13.2).</div>');
   drawBars('rv-pareto',PARETO,'rgba(242,99,124,.55)');
+  h+='<div class="grid g2">';
+  h+=panel('PER-SEAT DRIFT — S34 monitor','vote-flip rate + embedding delta; degradation earns a demotion proposal, not a quiet pass',
+    tbl(['Seat','>Vote-flip','>Embed δ','State'],[['S18 News Catalyst','12.4%','0.081','<span style="color:var(--warn)">WATCH — retrain queued</span>'],['S21 Social Sentiment','8.9%','0.064','<span style="color:var(--warn)">WATCH</span>'],['S14 ICT Execution','3.1%','0.022','<span class="up">STABLE</span>'],['S12 SMC Structure','2.7%','0.019','<span class="up">STABLE</span>'],['S01 Risk Officer','0.4%','0.006','<span class="up">STABLE — as it must be</span>']].map(r=>'<tr><td>'+r[0]+'</td><td class="r num">'+r[1]+'</td><td class="r num">'+r[2]+'</td><td class="mono" style="font-size:10.5px">'+r[3]+'</td></tr>').join('')),{flush:true});
+  h+=panel('GOLDEN-PACKET REGRESSION','48 canonical packets re-scored on every rules change',
+    kv('v13.2 · ACTIVE','<span class="up">48/48 reproduce ✓</span>')+
+    kv('v13.3-candidate','<span style="color:var(--blk)">46/48 — BLOCKED.</span> Two regressions must be explained or the candidate dies.')+
+    kv('HUMAN vs DIRECTOR','κ 0.71 agreement on 60 co-graded packets — measured, not assumed'));
+  h+='</div>';
   h+=panel('REVIEW REFUSALS','discipline about the discipline',
     REVIEW_REFUSALS.map(r=>kv('◆','<span style="font-size:11.5px">'+r+'</span>')).join(''));
   return h;
@@ -1771,6 +1797,18 @@ VIEWS['review.court']=function(){
     '</div></div>').join('');
   h+=panel('APPLIED HUMAN LESSONS','the teach-loop output: marked chart → structured rule → quiz-back → A/B → doctrine',
     tbl(['ID','Rule','Measured effect'],HUMAN_LESSONS.map(l=>'<tr><td class="mono">'+l.id+'</td><td class="i1" style="font-size:11.5px">'+U.esc(l.rule)+'</td><td class="i2" style="font-size:11px">'+U.esc(l.effect)+'</td></tr>').join('')),{flush:true});
+  h+=panel('TRAINING STUDIO — teach the desk a rule','your lesson → machine quiz-back → HUM chunk → court → paper A/B. It never edits itself without your sign-off.',
+    '<div class="grid g2"><div>'+
+    '<div class="kv" style="border:none;padding-bottom:2px"><span class="k">RULE / TITLE</span><span class="v"><input id="th-title" class="inp" placeholder="e.g. Equal highs need 2+ touches within 0.15×ATR to count as a pool"></span></div>'+
+    '<div class="kv" style="border:none;padding-bottom:2px"><span class="k">WHAT AI MISSED</span><span class="v"><input id="th-miss" class="inp" placeholder="What did the machine get wrong?"></span></div>'+
+    '<div class="kv" style="border:none;padding-bottom:2px"><span class="k">CORRECT READ</span><span class="v"><input id="th-correct" class="inp" placeholder="The read it should have made"></span></div>'+
+    '<div class="kv" style="border:none"><span class="k">INVALIDATION</span><span class="v"><input id="th-inval" class="inp" placeholder="When is this rule wrong?"></span></div>'+
+    '<div class="btnrow" style="margin-top:8px"><button class="btn gold" data-cmd="teach.submit">Submit lesson → quiz-back</button></div></div>'+
+    '<div><div class="kv" style="border:none"><span class="k">FLOW</span><span class="v mono" style="font-size:10px">WRITE → QUIZ-BACK → HUM-CHUNK → COURT → A/B COHORT → DOCTRINE</span></div>'+
+    kv('BAR','GOV-030: n≥30 samples, effect ≥ +0.3R before any promotion')+
+    kv('LANES','Lessons file to the relevant court lanes only — stay-in-lane holds for humans too')+'</div></div>');
+  h+=panel('SELF-LEARNING STREAM — machine proposals awaiting judgment','the mind proposes with confidence scores; only you deploy (LAW-013)',
+    AUTOLEARN.map(a2=>'<div class="kv"><span class="k mono" style="color:var(--paper)">'+a2.id+'</span><span class="v" style="font-size:11.5px"><span class="tag">conf '+a2.conf.toFixed(2)+'</span> '+U.esc(a2.txt)+'</span></div>').join(''));
   h+='<div class="banner gold"><span class="bico">◆</span><div><b>LS-112 is the teaching example:</b> a proposal to lower the 5R floor was rejected as unconstitutional — LAW-004 is locked. The court can tune detectors; it cannot touch the constitution.</div></div>';
   return h;
 };
@@ -1818,6 +1856,14 @@ VIEWS['system.health']=function(){
   h+=panel('RUNBOOK INDEX','every failure has an owner and a procedure',
     ['RB-01 Stale market data → block approvals, page P1, failover feed','RB-02 Options chain outage → contract gates fail closed','RB-03 Broker mismatch → lock new orders, reconcile, never auto-resend','RB-04 Queue saturation → shed P3/P4 first; positions lane never sheds','RB-05 Model outage → deterministic observation mode','RB-06 Bad deployment → golden-packet regression gate blocks promote','RB-07 Kill switch → this button, tested from every surface','RB-08 Data corruption → halt state-changing commands, restore from event log'].map(r=>kv(r.slice(0,5),'<span style="font-size:11px">'+r.slice(6)+'</span>')).join(''));
   h+='</div>';
+  h+=panel('PRODUCTION SCALE FABRIC — target architecture','SPEC, honestly labeled: nothing below is running in DEMO. This is the Phase 2–4 build plan at 5,234 symbols.',
+    '<div class="grid g2"><div>'+
+    tbl(['Tier','Scope','Cadence','LLM policy'],[['T0','24 command instruments','1–5s','never — deterministic only'],['T1','184 tradeable + active watch','1m','fan-out only when armed'],['T2','2,656 liquid optionable','1m light · 5m deep','promote on evidence'],['T3','2,370 remaining listed','1m heartbeat · EOD deep','never']].map(r=>'<tr><td class="mono"><b>'+r[0]+'</b></td><td class="i1" style="font-size:11px">'+r[1]+'</td><td class="mono" style="font-size:10px">'+r[2]+'</td><td class="i2" style="font-size:10px">'+r[3]+'</td></tr>').join(''))+
+    '</div><div>'+
+    kv('UNIT ECONOMICS','heartbeat $0.00006/sym-min · deep pass $0.018/sym · committee $0.42/candidate · verification packet $1.85')+
+    kv('SCALE ENVELOPE','5,234 sym / 96 workers / ~$12.9k/mo → 10k / 164 / ~$20.8k → 25k / 384 / ~$45.7k')+
+    kv('INVARIANTS','positions, risk, broker recon and T0 can never be starved · demotion never deletes evidence · every expensive call requires a promoted symbol + structured evidence object')+
+    '</div></div>');
   return h;
 };
 CMD.define({id:'drill.data',label:'Stale-data drill',purpose:'Flip quote feed to STALE and watch the desk fail closed',run:()=>{S.dataHealth='DEGRADED';FEEDS[0].st='STALE';FEEDS[0].age=12;SVR.audit('HUMAN (owner)','drill','DRILL: quote feed forced STALE — approvals must block (LAW-006)');UI.toast('Quote feed STALE — watch Decisions: approvals now block with DATA-STALE','warn','DRILL');render()}});
@@ -1844,6 +1890,7 @@ VIEWS['system.agents']=function(arg){
   h+=panel('PIPELINE — 14 machine steps, then the human','fan-out 2–9 parallel · gates sequential · any block short-circuits to the Director',
     '<div class="funnel">'+PIPELINE.map((p2,i)=>'<div class="fstage" style="min-width:76px;cursor:pointer" data-cmd="nav.system.agents" data-arg="'+p2[0]+'"><div class="fk">'+(i+1)+' · '+p2[1]+'</div><div class="fv" style="font-size:12px">'+p2[0]+'</div><div class="fd">'+SEATBY[p2[0]].nm.split(' ')[0]+'</div></div>').join('')+
     '<div class="fstage hot" style="min-width:90px"><div class="fk">15 · HUMAN</div><div class="fv" style="font-size:12px">YOU</div><div class="fd">hard edge — token, not callback</div></div></div>');
+  h+=panel('CONSCIOUSNESS MAP — 34 seats as one connected mind','every edge is a real dependency from the pipeline DAG · click a neuron to deep-dive',cortexSVG());
   SEATGROUPS.forEach(g=>{
     const seats=SEATS.filter(s=>s.grp===g);
     h+='<div class="kick" style="font-family:var(--mono);font-size:9.5px;letter-spacing:1.4px;color:var(--ink2);margin:14px 0 6px;text-transform:uppercase">'+g+' — '+seats.length+' seats</div><div class="grid g4">'+
@@ -1973,6 +2020,9 @@ VIEWS['system.autonomy']=function(){
     '<div class="i2" style="font-size:10px;margin-top:4px">Books: '+p.books.join(' · ')+'</div></div></div>').join('')+'</div>';
   h+=panel('RISK/REWARD FRONTIER — why these three books','and why premium-selling is NOT among them',
     tbl(['Book','>Win','>Avg win','>Avg loss','>Per trade','Status'],FRONTIER.map(f=>'<tr'+(f[5].startsWith('NOT')?' style="background:var(--blk-bg)"':'')+'><td>'+f[0]+'</td><td class="r num">'+f[1]+'</td><td class="r num up">'+f[2]+'</td><td class="r num dn">'+f[3]+'</td><td class="r num">'+f[4]+'</td><td class="i1" style="font-size:10.5px">'+f[5]+'</td></tr>').join('')),{flush:true});
+  h+=panel('LIVE IDEA BLOTTER — the corpus, growing','personas take EVERY idea they generate — zero survivorship bias · <span class="demo-wm">sim corpus</span>',
+    BLOTTER.length?tbl(['Time','ID','Mind','Sym','Book','State','>R'],BLOTTER.slice(0,18).map(b=>'<tr><td class="mono">'+b.t+'</td><td class="mono">'+b.id+'</td><td>'+b.ico+' '+b.who+'</td><td class="mono"><b>'+b.sym+'</b></td><td class="i1" style="font-size:10.5px">'+b.pb+'</td><td>'+lc(b.st==='OPEN'?'MANAGING':'CLOSED')+'</td><td class="r num '+(b.curR>=0?'up':'dn')+'">'+U.R(b.curR)+'</td></tr>').join(''))
+    :'<div class="empty"><div class="e1">CORPUS WARMING UP</div>Ideas begin streaming within seconds of enabling the lab.</div>',{flush:true});
   h+='<div class="btnrow"><button class="btn gold" disabled data-blocked="LAW-008: autonomous LIVE is forbidden until governed promotion criteria are met (BT gates + n≥30 evidence + owner arming with typed confirmation). None of that exists in DEMO — so this button tells you the truth instead of pretending.">ARM AUTONOMOUS LIVE</button>'+
     '<button class="btn sm" data-cmd="autonomy.disable">Disable lab</button></div>';
   return h;
@@ -1980,6 +2030,276 @@ VIEWS['system.autonomy']=function(){
 CMD.define({id:'autonomy.enable',label:'Enable autonomy lab',purpose:'Paper-only personalities behind a feature flag (LAW-008)',
   run:()=>{S.autonomyLab=true;SVR.audit('HUMAN (owner)','flag','Autonomy lab ENABLED — paper only, risk caps + kill switch bind');UI.toast('Autonomy lab enabled — paper personalities visible','paper','FLAG');render()}});
 CMD.define({id:'autonomy.disable',label:'Disable autonomy lab',purpose:'Flag off',run:()=>{S.autonomyLab=false;SVR.audit('HUMAN (owner)','flag','Autonomy lab disabled');render()}});
+/* ═══════════ V11.1 FULL-FEATURE MERGE ═══════════
+   Every capability of legacy V6–V10 gets a real home inside the seven
+   domains. Nothing removed; everything recompartmentalized. This module
+   ADDS workspaces and upgrades views in place — it never monkey-patches
+   render pipelines (the legacy antipattern this rebuild retired). */
+
+/* ── full 24-symbol universe (legacy Q2 canon) ── */
+const UNIVERSE24=[
+ ['NVDA',196.74,'MMBM Reversal','TRIGGERED','Semis'],['TSLA',412.66,'OTE Continuation','ARMED','Autos'],
+ ['AMD',171.42,'Breaker Retest','FORMING','Semis'],['META',611.80,'Silver Bullet','FORMING','Mega-tech'],
+ ['QQQ',529.77,'PD Array Rotation','FORMING','Index'],['SPY',601.24,'Killzone Sweep','SCANNING','Index'],
+ ['MSFT',447.92,'OTE Continuation','SCANNING','Mega-tech'],['AAPL',232.60,'Breaker Retest','SCANNING','Mega-tech'],
+ ['AMZN',224.05,'MMBM Reversal','SCANNING','Mega-tech'],['GOOGL',188.40,'Silver Bullet','SCANNING','Mega-tech'],
+ ['NFLX',881.20,'Earnings Drift','SCANNING','Media'],['CRM',332.15,'PD Array Rotation','SCANNING','Software'],
+ ['AVGO',238.66,'OTE Continuation','CANDIDATE','Semis'],['SMCI',44.18,'MMSM Reversal','SCANNING','Semis'],
+ ['COIN',288.90,'Killzone Sweep','SCANNING','Crypto'],['PLTR',82.35,'OTE Continuation','SCANNING','Software'],
+ ['MU',112.74,'Breaker Retest','SCANNING','Semis'],['ORCL',171.02,'PD Array Rotation','SCANNING','Software'],
+ ['XOM',109.44,'Range Fade','SCANNING','Energy'],['JPM',265.80,'Range Fade','SCANNING','Banks'],
+ ['IWM',228.31,'Killzone Sweep','SCANNING','Index'],['TLT',88.92,'Macro Drift','SCANNING','Rates'],
+ ['GLD',272.10,'Macro Drift','SCANNING','Metals'],['UNH',521.66,'Earnings Drift','SCANNING','Health'],
+].map(r=>({sym:r[0],px:r[1],setup:r[2],fsm:r[3],sector:r[4],chg:(RNG.r()-0.45)*2.4,rvol:0.6+RNG.r()*2.4,rs:Math.floor(RNG.r()*99)+1}));
+
+/* ── chart workstation state (UI prefs only — never authority) ── */
+const CHARTX={tf:'5m',type:'candles',ema20:true,ema50:false,vwap:true,zones:true,replay:false,replayAt:100,wall:false};
+const TFS=['1M','1W','1D','4H','1H','15m','5m','1m'];
+const TF_NOTES={ // Vision Desk canon — per-TF machine read for the active thesis symbol
+ '1M':['UP','Campaign intact above the yearly protected low — nothing tactical here, but nothing broken either.'],
+ '1W':['UP','Protected low 168.40 holds; no ladder conflict between weekly and daily.'],
+ '1D':['UP','BOS 03-12 · price in the discount of the dealing range — pullbacks are for buying until the protected low fails.'],
+ '4H':['DISCOUNT','Phase D re-accumulation: spring and test complete. The range is resolving upward.'],
+ '1H':['SHIFTING','Reclaim through mid-range; watching for acceptance above equilibrium.'],
+ '15m':['OTE','Tagged the 62–79% OTE — the 70.5% level is the A+ tag. A 5m MSS here arms the trigger.'],
+ '5m':['TRIGGER','MSS 10:18 with displacement 74/100 — the machine trigger this packet is built on.'],
+ '1m':['ENTRY','Sweep of a 1m pool then reclaim. Earlier is front-running the 5m; later gives worse R.']};
+
+function drawChartX(cvId,sym,opts){POSTRENDER.push(()=>{const cv=document.getElementById(cvId);if(!cv)return;opts=opts||{};
+  const W=cv.width=cv.clientWidth*2,H=cv.height=(opts.h||300)*2,x=cv.getContext('2d');
+  const all=candles(sym,opts.n||110),cut=opts.replay?Math.max(12,Math.floor(all.length*opts.replayAt/100)):all.length;
+  const data=all.slice(0,cut),s=symBy(sym);
+  const lows=data.map(c=>c.l),his=data.map(c=>c.h);let lo=Math.min(...lows),hi=Math.max(...his);
+  if(s&&s.levels&&s.levels.stop&&!opts.replay){lo=Math.min(lo,s.levels.stop*0.998);hi=Math.max(hi,(s.levels.t2||hi)*1.002)}
+  const pad=(hi-lo)*0.04;lo-=pad;hi+=pad;
+  const AX=88,cw=(W-AX)/data.length,py=p=>H-((p-lo)/(hi-lo))*(H*0.80)-H*0.03;
+  x.fillStyle='#070B12';x.fillRect(0,0,W,H);
+  x.strokeStyle='rgba(151,166,192,.08)';x.lineWidth=1;x.font='17px monospace';
+  const step=(hi-lo)/5;for(let i=0;i<=5;i++){const p=lo+step*i,y=py(p);x.beginPath();x.moveTo(0,y);x.lineTo(W-AX,y);x.stroke();x.fillStyle='#67748C';x.fillText(p.toFixed(p>1000?0:2),W-AX+8,y+6)}
+  if(opts.zones&&s&&s.levels&&s.levels.entry){
+    const zx=(W-AX)*0.57;
+    x.fillStyle='rgba(90,167,255,.10)';x.fillRect(zx,py(s.levels.entry*1.0005),(W-AX)-zx,py(s.levels.entry*0.997)-py(s.levels.entry*1.0005));
+    x.fillStyle='rgba(90,167,255,.7)';x.fillText('FVG · DET-041',zx+8,py(s.levels.entry)-8);
+    x.fillStyle='rgba(47,214,160,.10)';x.fillRect(zx*0.94,py(s.levels.stop*1.007),(W-AX)-zx*0.94,py(s.levels.stop*1.001)-py(s.levels.stop*1.007));
+    x.fillStyle='rgba(47,214,160,.7)';x.fillText('OB · DET-052',zx*0.94+8,py(s.levels.stop*1.004)+20)}
+  /* series */
+  if(opts.type==='line'||opts.type==='area'){
+    x.beginPath();data.forEach((c,i)=>{const X=i*cw+cw/2,Y=py(c.c);i?x.lineTo(X,Y):x.moveTo(X,Y)});
+    x.strokeStyle='#5AA7FF';x.lineWidth=2.5;x.stroke();
+    if(opts.type==='area'){x.lineTo(cut*cw,H);x.lineTo(0,H);x.closePath();const g=x.createLinearGradient(0,0,0,H);g.addColorStop(0,'rgba(90,167,255,.20)');g.addColorStop(1,'rgba(90,167,255,0)');x.fillStyle=g;x.fill()}
+  }else{
+    data.forEach((c,i)=>{const X=i*cw,up=c.c>=c.o;
+      x.strokeStyle=up?'rgba(47,214,160,.85)':'rgba(242,99,124,.85)';x.beginPath();x.moveTo(X+cw/2,py(c.h));x.lineTo(X+cw/2,py(c.l));x.stroke();
+      x.fillStyle=up?'rgba(47,214,160,.85)':'rgba(242,99,124,.85)';const y1=py(Math.max(c.o,c.c)),y2=py(Math.min(c.o,c.c));x.fillRect(X+cw*0.18,y1,Math.max(2,cw*0.64),Math.max(2,y2-y1));
+      x.fillStyle='rgba(90,167,255,.22)';x.fillRect(X+cw*0.18,H-c.v*H*0.06,Math.max(2,cw*0.64),c.v*H*0.06)})}
+  /* indicators */
+  const ema=(n)=>{const k=2/(n+1);let e=data[0].c;return data.map(c=>(e=c.c*k+e*(1-k)))};
+  if(opts.ema20){const e=ema(20);x.beginPath();e.forEach((v,i)=>{const X=i*cw+cw/2,Y=py(v);i?x.lineTo(X,Y):x.moveTo(X,Y)});x.strokeStyle='rgba(231,182,83,.8)';x.lineWidth=1.6;x.stroke()}
+  if(opts.ema50){const e=ema(50);x.beginPath();e.forEach((v,i)=>{const X=i*cw+cw/2,Y=py(v);i?x.lineTo(X,Y):x.moveTo(X,Y)});x.strokeStyle='rgba(157,141,248,.8)';x.lineWidth=1.6;x.stroke()}
+  if(opts.vwap){let cum=0,cv2=0;const w=data.map(c=>{const tp=(c.h+c.l+c.c)/3;cum+=tp*c.v;cv2+=c.v;return cum/cv2});
+    x.beginPath();w.forEach((v,i)=>{const X=i*cw+cw/2,Y=py(v);i?x.lineTo(X,Y):x.moveTo(X,Y)});x.strokeStyle='rgba(87,199,227,.7)';x.setLineDash([3,4]);x.stroke();x.setLineDash([])}
+  if(opts.levels!==false&&s&&s.levels&&s.levels.entry&&!opts.mini){
+    [['ENTRY',s.levels.entry,'#5AA7FF'],['STOP',s.levels.stop,'#FF4D5F'],['T1',s.levels.t1,'#2FD6A0'],['T2 · 5R',s.levels.t2,'#2FD6A0'],['T3',s.levels.t3,'#2FD6A0']].forEach(([nm,p,col])=>{
+      if(!p)return;const y=py(p);if(y<0||y>H)return;
+      x.strokeStyle=col;x.setLineDash([7,5]);x.beginPath();x.moveTo(0,y);x.lineTo(W-AX,y);x.stroke();x.setLineDash([]);
+      x.fillStyle=col;x.fillText(nm+' '+p.toFixed(2),10,y-6)})}
+  if(opts.replay){x.fillStyle='rgba(214,178,94,.9)';x.font='18px monospace';x.fillText('REPLAY · bar '+cut+'/'+all.length+' · no future leakage',12,26)}
+})}
+CMD.define({id:'chartx.set',label:'Chart setting',purpose:'Chart workstation preference (UI only — never authority)',audit:false,
+  run:a=>{const[k,v2]=a.split('=');if(k==='tf')CHARTX.tf=v2;else if(k==='type')CHARTX.type=v2;else CHARTX[k]=!CHARTX[k];render()}});
+CMD.define({id:'chartx.replayAt',label:'Replay scrub',purpose:'Scrub the deterministic replay',audit:false,run:(a,el)=>{CHARTX.replayAt=+el.value;const cvOpts={h:340,n:110,replay:true,replayAt:CHARTX.replayAt,type:CHARTX.type,ema20:CHARTX.ema20,ema50:CHARTX.ema50,vwap:CHARTX.vwap,zones:CHARTX.zones};drawChartX('rc-main',S.sym,cvOpts);(POSTRENDER.splice(0)).forEach(f=>f())}});
+CMD.define({id:'chartx.notes',label:'Download TA notes',purpose:'Generate the multi-timeframe technical read as a Markdown file (real download)',
+  run:()=>{const s=symBy(S.sym);
+    const md='# ATLAS Technical Read — '+s.sym+' ('+s.name+')\n_Generated '+CLOCK.hms()+' ET (sim) · DEMO data · seed '+ck('demo.seed')+'_\n\n'+
+      '**Thesis:** '+s.note+'\n\n**Playbook:** '+s.setup+' · lifecycle '+s.fsm+'\n\n## Timeframe ladder\n\n'+
+      TFS.map(tf=>'- **'+tf+' · '+TF_NOTES[tf][0]+'** — '+TF_NOTES[tf][1]).join('\n')+
+      '\n\n## Levels\n- Draw above: '+s.levels.poolAbove+'\n- Pool below: '+s.levels.poolBelow+
+      (s.levels.entry?'\n- Plan: entry '+s.levels.entry+' · stop '+s.levels.stop+' · T2(5R) '+s.levels.t2:'')+
+      '\n\n> Higher timeframes justify; lower timeframes trigger (AX-M7). DEMO — not investment advice.\n';
+    const blob=new Blob([md],{type:'text/markdown'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='ATLAS_TA_'+s.sym+'_demo.md';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),4000);
+    SVR.audit('HUMAN (owner)','export','TA notes exported for '+s.sym+' — filed to archive as SHADOW');
+    UI.toast('TA notes downloaded — real file, honestly DEMO-labeled','ok','VISION DESK')}});
+
+/* ── RESEARCH · Chart — full workstation (absorbs legacy Q5 Chart Studio + V1 Vision Desk) ── */
+VIEWS['research.chart']=function(){
+  let h=rHead('chart workstation','Chart Studio + Vision Desk, unified. Annotations cite their detectors; replay is deterministic with no future leakage. Press F for focus mode.');
+  const seg=(items,key,cur)=>'<span class="seg">'+items.map(v2=>'<button class="'+(cur===v2?'on':'')+'" data-cmd="chartx.set" data-arg="'+key+'='+v2+'">'+v2+'</button>').join('')+'</span>';
+  const tog=(label,k)=>'<button class="btn sm'+(CHARTX[k]?' pri':'')+'" data-cmd="chartx.set" data-arg="'+k+'">'+label+'</button>';
+  h+='<div class="row" style="margin-bottom:10px">'+seg(TFS,'tf',CHARTX.tf)+seg(['candles','line','area'],'type',CHARTX.type)+
+     tog('EMA20','ema20')+tog('EMA50','ema50')+tog('VWAP','vwap')+tog('Zones','zones')+tog('Replay','replay')+tog('Vision wall','wall')+
+     '<button class="btn sm" data-cmd="chartx.notes">↓ TA notes .md</button></div>';
+  if(CHARTX.wall){
+    h+=panel('VISION WALL — eight timeframes, one read each','the machine looks top-down; so should you',
+      '<div class="grid g4">'+TFS.map((tf,i)=>{
+        const cid='vw-'+i;drawChartX(cid,S.sym,{h:120,n:48+i*6,mini:true,levels:false,zones:false,type:'candles',ema20:true});
+        return'<div><div class="row" style="justify-content:space-between;margin-bottom:4px"><span class="mono" style="font-size:11px"><b>'+tf+'</b></span>'+chip(TF_NOTES[tf][0],TF_NOTES[tf][0]==='UP'?'ch-ok':TF_NOTES[tf][0]==='TRIGGER'||TF_NOTES[tf][0]==='ENTRY'?'ch-live':'ch-info','▲')+'</div><canvas id="'+cid+'" class="cv" style="height:120px"></canvas><div class="i2" style="font-size:10px;margin-top:4px;line-height:1.5">🔍 '+U.esc(TF_NOTES[tf][1])+'</div></div>'}).join('')+'</div>');
+  }else{
+    h+=panel('PRIMARY · '+S.sym+' · '+CHARTX.tf,'server-produced annotations only — every zone cites its detector',
+      '<canvas id="rc-main" class="cv" style="height:340px"></canvas>'+
+      (CHARTX.replay?'<div class="row" style="margin-top:8px"><span class="mono i2" style="font-size:10px">REPLAY</span><input type="range" min="10" max="100" value="'+CHARTX.replayAt+'" style="flex:1" data-cmdin="chartx.replayAt"><span class="mono i2" style="font-size:10px">'+CHARTX.replayAt+'%</span></div>':'')+
+      '<div class="legend"><span><i style="background:rgba(90,167,255,.5)"></i>FVG (DET-041)</span><span><i style="background:rgba(47,214,160,.5)"></i>Order block (DET-052)</span><span><i style="background:rgba(231,182,83,.8)"></i>EMA20</span><span><i style="background:rgba(157,141,248,.8)"></i>EMA50</span><span><i style="background:rgba(87,199,227,.7)"></i>VWAP</span><span><i style="background:#FF4D5F"></i>Structural stop</span></div>');
+    drawChartX('rc-main',S.sym,{h:340,n:110,replay:CHARTX.replay,replayAt:CHARTX.replayAt,type:CHARTX.type,ema20:CHARTX.ema20,ema50:CHARTX.ema50,vwap:CHARTX.vwap,zones:CHARTX.zones});
+  }
+  h+='<div class="grid g2">';
+  h+=panel('TIMEFRAME LADDER','higher timeframes justify; lower timeframes trigger (AX-M7)',
+    tbl(['TF','Bias','Machine read'],TFS.map(tf=>'<tr'+(tf===CHARTX.tf?' class="sel"':'')+'><td class="mono">'+tf+'</td><td>'+chip(TF_NOTES[tf][0],TF_NOTES[tf][0]==='UP'?'ch-ok':TF_NOTES[tf][0]==='TRIGGER'||TF_NOTES[tf][0]==='ENTRY'?'ch-live':'ch-info','▲')+'</td><td class="i1" style="font-size:11px">'+U.esc(TF_NOTES[tf][1])+'</td></tr>').join('')),{flush:true});
+  h+=panel('ALIGNMENT VERDICT','net of the ladder',
+    '<div style="font-size:15px;font-family:var(--mono);color:var(--pos);margin-bottom:6px">LONG · FULL STACK ALIGNED</div>'+
+    '<div class="i1" style="font-size:11.5px;line-height:1.6">6+ of 8 timeframes constructive. Doctrine: ≥6 full alignment · ≥4 majority · ≥2 mixed/wait · below that, stand aside.</div>'+
+    '<div class="hr"></div>'+kv('FILED','Every vision read files to the Setup Archive as SHADOW for counterfactual tracking (Review → Autopsy).'));
+  h+='</div>';
+  return h;
+};
+
+/* ── DECISIONS · Committee Rail (absorbs legacy C3 Live Rail) ── */
+const RAIL={landed:5,scrub:100};
+CMD.define({id:'rail.scrub',label:'Rail replay scrub',purpose:'Time-travel the committee run — every frame is a ledger read',audit:false,run:(a,el)=>{RAIL.scrub=+el.value;render()}});
+VIEWS['decisions.rail']=function(){
+  const p=PACKETS[0];
+  const upto=Math.floor(PIPELINE.length*RAIL.scrub/100);
+  let h=vhead('DECISIONS · committee rail','Watch the firm think — 14 machine steps, then you',
+    'Fan-out steps 2–9 run parallel after freshness; gates 10–12 are sequential — any block short-circuits to the Director. Step 15 is a hard edge: a human token, not a callback.');
+  h+='<div class="row" style="margin-bottom:10px"><span class="mono i2" style="font-size:10px">REPLAY RUN-NVDA-1042</span><input type="range" min="7" max="100" value="'+RAIL.scrub+'" style="flex:1;max-width:420px" data-cmdin="rail.scrub"><span class="mono i2" style="font-size:10px">'+upto+'/'+PIPELINE.length+' steps</span></div>';
+  h+=panel('PIPELINE RUN — RUN-NVDA-1042 → '+p.id,'each landed vote is a ledger read; content hashes verify nothing was rewritten',
+    '<div class="tl">'+PIPELINE.slice(0,Math.min(upto,PIPELINE.length)).map((st,i)=>{
+      const seat=SEATBY[st[0]];const vote=p.votes.find(v2=>v2.seat===st[0]);
+      return'<div class="tle '+(vote?(vote.verdict==='pass'?'good':vote.verdict==='block'?'bad':'hot'):'')+'"><span class="tt">step '+(i+1)+' · '+st[1]+'</span><br><b class="mono" style="font-size:11px;cursor:pointer" data-cmd="nav.system.agents" data-arg="'+st[0]+'">'+st[0]+' '+seat.nm+'</b> '+(vote?chip(vote.verdict,vote.verdict==='pass'?'ch-ok':vote.verdict==='advisory'?'ch-warn':vote.verdict==='block'?'ch-blk':'ch-mut','·')+' <span class="i1" style="font-size:11px">'+U.esc(vote.txt)+'</span>':'<span class="i2" style="font-size:10.5px">deterministic gate — no vote artifact required</span>')+'</div>'}).join('')+
+    (upto>=PIPELINE.length?'<div class="tle hot"><span class="tt">step 15 · HUMAN</span><br><b class="mono" style="font-size:11px">YOU</b> '+chip(p.state.replace(/_/g,' '),p.state==='READY_FOR_HUMAN'?'ch-live':'ch-ok','◆')+' <span class="i1" style="font-size:11px">'+(p.state==='READY_FOR_HUMAN'?'awaiting your enum — TTL '+fmtTTL(p):'decided '+(p.decision||p.state)+' at '+(p.decidedAt||'—'))+'</span></div>':'')+'</div>');
+  h+='<div class="grid g2">';
+  h+=panel('CONFLICT RESOLUTION — named, never averaged','the hierarchy is the tiebreaker',
+    kv('CONFLICT','S21 crowded-heat (92nd pctile) vs S09 leader-strength (RS 94)')+
+    kv('RESOLUTION','Hierarchy: sentiment is context, never trigger (CC-13). S09 doctrine stands; S21 recorded as dissent — visible forever.')+
+    kv('HIERARCHY','<span style="font-size:10.5px">'+HIERARCHY+'</span>'));
+  h+=panel('RUN TELEMETRY','bounded fan-out economics',
+    kv('SEATS INVOKED',p.votes.length+' of 34 — committee fan-out is bounded ('+ck('agents.committee_max_fanout')+' parallel max) '+prov('agents.committee_max_fanout'))+
+    kv('SHORT-CIRCUITS','0 this run · AMD run 10:21 short-circuited at step 10 (S22 contract veto)')+
+    kv('BUDGET','Packet build 17.4s < '+ck('slo.packet_p95_s')+'s p95 '+prov('slo.packet_p95_s')));
+  h+='</div>';
+  return h;
+};
+
+/* ── SYSTEM · Knowledge Base (absorbs legacy M7 + V3 retrieval doctrine) ── */
+VIEWS['system.knowledge']=function(){
+  let h=vhead('SYSTEM · knowledge base','137 doctrine files · 20 layers · lane-filtered retrieval',
+    'Constitution and config load deterministically — never by vector similarity. Legacy layers are lineage: they can inform, they cannot silently override current rules.');
+  h+='<div class="grid g4">'+stat('Files','137','1.91 MB · 15,892 lines')+stat('Layers','20','00_CONSTITUTION → 16_ICT_UNIFIED + lineage')+stat('Rule IDs','48','unique, cited across doctrine')+stat('KB chunks','18,442','hybrid retrieval · lane-filtered')+'</div>';
+  h+='<div class="grid g2" style="margin-top:12px">';
+  h+=panel('LAYER INDEX','authority tier descends with layer number',
+    tbl(['Layer','Role','Authority'],[
+     ['00_CONSTITUTION','The 18 laws + operator boundaries','SUPREME — deterministic load'],
+     ['11_RUNTIME_CONFIG','atlas_config + schemas + agents + playbooks','NUMERIC TRUTH (LAW-015)'],
+     ['01_MIND … 10_HUMAN_INTERFACE','Operating doctrine per faculty','CURRENT CORE'],
+     ['13_SYSTEM_PROMPTS','Agent role definitions','CURRENT CORE'],
+     ['05_SOFTWARE_MASTER_BUILD_SPEC','Implementation intent','SPEC'],
+     ['03_V12_REFERENCE + 99_source_volumes','Snapshots, source volumes','LINEAGE ONLY — cannot override'],
+    ].map(r=>'<tr><td class="mono" style="font-size:10.5px">'+r[0]+'</td><td class="i1" style="font-size:11px">'+r[1]+'</td><td class="i2" style="font-size:10px">'+r[2]+'</td></tr>').join('')),{flush:true});
+  h+=panel('MOST-CITED RULES','what the doctrine actually leans on',
+    tbl(['Rule','>Citations','Meaning'],[['LAW-015',48,'Config is numeric truth'],['LAW-001',41,'No structural invalidation → no trade'],['LAW-012',23,'Prior outcome cannot alter next trade’s risk'],['LAW-004',21,'Realistic 5R against the TRUE stop'],['LAW-017',13,'Event blackouts enforced'],['ICT-001',10,'Displacement + FVG entry doctrine'],['EXE-*',10,'Execution router rules']].map(r=>'<tr><td class="mono" style="color:var(--live)">'+r[0]+'</td><td class="r num">'+r[1]+'</td><td class="i1" style="font-size:11px">'+r[2]+'</td></tr>').join('')),{flush:true});
+  h+='</div>';
+  h+=panel('RETRIEVAL DOCTRINE','how agents read the library without leaving their lane',
+    kv('HYBRID RANK','0.65 × cosine (pgvector HNSW) + 0.35 × lexical ts_rank')+
+    kv('LANE FILTER','agent_owners metadata filters at retrieval — no seat reads another seat’s doctrine')+
+    kv('DETERMINISTIC','Constitution + active config bypass vector search entirely — loaded verbatim, versioned')+
+    kv('INSPECTION','Every decision stores its retrieved chunk hashes — a human can inspect exactly what the seat read')+
+    kv('BLOCKING','Doctrine/config version mismatch blocks live decisions until reconciled'));
+  return h;
+};
+
+/* ── Setup Archive (legacy V2) → appended into Review · Autopsy via ARCHIVE data ── */
+const ARCHIVE=[
+ ['STP-0931','NVDA','TAKEN','+0.62R open','MMBM Reversal','—'],
+ ['STP-0928','TSLA','LIVE-QUEUE','armed','OTE Continuation','—'],
+ ['STP-0924','AMD','REJECTED','WOULD +2.3R','Breaker Retest','MISS — contract gate (OPT-007) blocked it; LS-121 A/B running'],
+ ['STP-0919','META','TAKEN(paper)','−0.3R open','Silver Bullet','counter-regime honored at paper'],
+ ['STP-0913','COIN','REJECTED','WOULD −1.0R','Killzone Sweep','correct — chasing filter'],
+ ['STP-0908','PLTR','PASSED','WOULD +1.8R','OTE Continuation','MISS — displacement scored 58, just under threshold; feeds LS-118 review'],
+ ['STP-0901','AAPL','REJECTED','WOULD +2.8R ran, never 5R','Breaker Retest','correct — 5R bar is the bar'],
+ ['STP-0893','MU','PASSED','WOULD +1.2R','Earnings Drift','earnings T-1 exclusion — rule costs winners AND prevents blowups; net-correct'],
+];
+
+/* ── Training Studio (legacy M5 teach loop) ── */
+let HUM_SEQ=120;
+CMD.define({id:'teach.submit',label:'Submit lesson',purpose:'Teach the desk a rule: structured lesson → quiz-back → HUM chunk → court A/B',
+  run:()=>{const t=$('#th-title'),m=$('#th-miss'),c=$('#th-correct'),iv=$('#th-inval');
+    if(!t.value.trim()||!c.value.trim()){UI.toast('Title and correct read are required — a lesson without a rule is a vibe','warn','TRAINING');return}
+    const title=t.value.trim(),miss=m.value.trim()||'—',correct=c.value.trim(),inval=iv.value.trim()||'—';
+    UI.modal('QUIZ-BACK — the desk restates your lesson',
+      '<div class="i1" style="line-height:1.65;font-size:12px">Before anything is minted, the machine proves it understood:</div>'+
+      '<div class="code" style="margin-top:8px">RULE: '+U.esc(title)+'\nWHAT I MISSED: '+U.esc(miss)+'\nCORRECT READ: '+U.esc(correct)+'\nINVALIDATION: '+U.esc(inval)+'\nLANES: Technical Court (S10–S16)\nPIPELINE: HUM chunk → Learning Court → paper A/B cohort → doctrine</div>'+
+      '<div class="i2" style="font-size:10.5px;margin-top:8px">Confirm mints HUM-'+(HUM_SEQ+1)+' and files an LS proposal. Nothing touches live rules without the court + your sign-off (LAW-013).</div>',
+      '<button class="btn" data-cmd="ui.closeModal">Revise</button><button class="btn gold" data-cmd="teach.confirm" data-arg="'+U.esc(title).replace(/"/g,'&quot;')+'">Confirm — mint HUM chunk</button>')}});
+CMD.define({id:'teach.confirm',label:'Confirm lesson',purpose:'Mint the HUM chunk and file to court',
+  run:a=>{HUM_SEQ++;const id='HUM-'+HUM_SEQ;
+    HUMAN_LESSONS.unshift({id,rule:a,effect:'A/B cohort forming — n=0/30 (GOV-030)'});
+    COURT.unshift({id:'LS-'+(130+HUM_SEQ%100),title:a,from:'HUMAN teach-loop ('+id+')',stage:'PROPOSED',evidence:'Human-authored lesson; awaiting paper A/B evidence (n≥30, effect ≥0.3R).',diff:'kb.chunk += '+id+' (Technical Court lanes)',risk:'None until promoted — paper-observable only',needs:'30 A/B samples'});
+    SVR.audit('HUMAN (owner)','teach',id+' minted — "'+a+'" → Learning Court + paper A/B cohort');
+    UI.closeModal();UI.toast(id+' minted → court + A/B cohort. The desk never edits itself without your sign-off.','gold','TRAINING STUDIO');go('review','court')}});
+
+/* ── AUTOLEARN stream (legacy V3 Brain Console self-proposals) ── */
+const AUTOLEARN=[
+ {id:'MM-LUNCH-001',conf:.86,txt:'Lunch 11:30–13:30 expectancy −0.21R vs +1.1R in killzones → propose lunch-throttle: no new entries 11:45–13:15 unless grade ≥ A'},
+ {id:'DET-PD-071',conf:.79,txt:'70.5% OTE tags average +1.4R vs +0.9R for 62% tags → weight 70.5% tags higher in promotion scoring'},
+ {id:'OPT-016',conf:.74,txt:'30-minute re-check before terminal contract-block — spread normalizes within 30m in 64% of vetoes'},
+ {id:'DET-DISP-055',conf:.68,txt:'Soft-floor 55–60 displacement with reduced size instead of hard reject — needs regime split'},
+ {id:'S18-NEWS-009',conf:.81,txt:'Vendor pre-announcement noise misclassified as catalyst — flagged for human authorship, not auto-fix'},
+];
+
+/* ── consciousness map (legacy M1) — SVG cortex render ── */
+const CORTEX=[['PERCEPTION',['S04','S05','S06','S10','S11','S12','S13','S14','S15']],['INTEL',['S16','S17','S18','S19','S20','S21']],['OPTIONS',['S22','S23','S24','S25']],['STRATEGY',['S08','S09','S26']],['RISK',['S01','S33']],['JUDGMENT',['S00','S28']],['MEMORY',['S02','S07','S32']],['LEARNING',['S29','S30','S31','S03']],['EXECUTION',['S27']]];
+const AXONS=[['S12','S13'],['S13','S14'],['S14','S26'],['S11','S26'],['S10','S26'],['S22','S26'],['S26','S00'],['S09','S00'],['S08','S00'],['S21','S00'],['S18','S00'],['S01','S00'],['S00','S28'],['S28','S27'],['S02','S01'],['S17','S20'],['S05','S12'],['S33','S01'],['S29','S03'],['S31','S29'],['S07','S00']];
+function cortexSVG(){
+  const cols=CORTEX.length,W=1560,H=340,cw=W/cols,pos={};
+  let g='';
+  CORTEX.forEach(([nm,ids],ci)=>{
+    g+='<rect x="'+(ci*cw+6)+'" y="26" width="'+(cw-12)+'" height="'+(H-40)+'" rx="8" fill="rgba(18,26,43,.5)" stroke="rgba(151,166,192,.12)"/>';
+    g+='<text x="'+(ci*cw+cw/2)+'" y="18" text-anchor="middle" font-family="monospace" font-size="10" letter-spacing="1.5" fill="#67748C">'+nm+'</text>';
+    ids.forEach((id,i)=>{const x=ci*cw+cw/2,y=52+i*((H-80)/Math.max(ids.length,1));pos[id]=[x,y]});});
+  AXONS.forEach(([a,b])=>{const p1=pos[a],p2=pos[b];if(!p1||!p2)return;
+    g+='<path d="M'+p1[0]+','+p1[1]+' Q'+((p1[0]+p2[0])/2)+','+((p1[1]+p2[1])/2-26)+' '+p2[0]+','+p2[1]+'" fill="none" stroke="rgba(90,167,255,.18)" stroke-width="1.4"/>'});
+  CORTEX.forEach(([,ids])=>ids.forEach(id=>{const [x,y]=pos[id],s=SEATBY[id];
+    g+='<g style="cursor:pointer" data-cmd="nav.system.agents" data-arg="'+id+'"><circle cx="'+x+'" cy="'+y+'" r="11" fill="'+(s.veto?'rgba(255,77,95,.14)':'rgba(90,167,255,.10)')+'" stroke="'+(s.veto?'rgba(214,178,94,.8)':'rgba(90,167,255,.45)')+'" stroke-width="'+(s.veto?'2':'1.2')+'"/><text x="'+x+'" y="'+(y+3)+'" text-anchor="middle" font-family="monospace" font-size="8.5" fill="#E9EEF6">'+id.slice(1)+'</text><text x="'+x+'" y="'+(y+24)+'" text-anchor="middle" font-family="monospace" font-size="7.5" fill="#67748C">'+s.nm.split(' ')[0]+'</text></g>'}));
+  return'<div style="overflow-x:auto"><svg viewBox="0 0 '+W+' '+H+'" style="min-width:1100px;width:100%;background:var(--bg0);border:1px solid var(--line);border-radius:6px">'+g+'</svg></div>'+
+  '<div class="legend" style="margin-top:6px"><span><i style="background:rgba(214,178,94,.8)"></i>gold ring = veto seat</span><span><i style="background:rgba(90,167,255,.45)"></i>edge = real dependency from the pipeline DAG</span></div>'+
+  '<div class="i2" style="font-size:10.5px;margin-top:4px">Teamwork law: no seat sees another’s prompt — only schema outputs on the bus. The Director integrates; it never averages.</div>';
+}
+
+/* ── autonomy blotter (legacy A1/A3) — honest sim corpus, zero survivorship ── */
+const BLOTTER=[];let BLOT_SEQ=8100;
+function blotterStep(n){
+  if(!S.autonomyLab||S.kill)return;
+  BLOTTER.forEach(b=>{if(b.st==='OPEN'){b.prog+=0.08+RNG.r()*0.1;b.curR=b.outR*Math.min(1,b.prog)*(0.7+0.3*Math.sin(b.prog*6));
+    if(b.prog>=1){b.st='CLOSED';b.curR=b.outR;SVR.audit(b.who+' (auto)','blotter',b.id+' closed '+U.R(b.outR)+' — corpus n grows, win or lose (zero survivorship)')}}});
+  if(n%10===0&&BLOTTER.filter(b=>b.st==='OPEN').length<4){
+    const p=RNG.pick(PERSONAS),u=RNG.pick(UNIVERSE24);
+    const win=RNG.r()<parseFloat(p.win)/100,outR=win?(0.8+RNG.r()*(p.id==='swing'?6:2.5)):-(0.4+RNG.r()*0.6);
+    BLOTTER.unshift({id:'ATO-'+(++BLOT_SEQ),t:CLOCK.hm(),who:p.nm,ico:p.ico,sym:u.sym,pb:RNG.pick(p.books),st:'OPEN',prog:0,curR:0,outR});
+    if(BLOTTER.length>40)BLOTTER.pop()}
+}
+
+/* ── Monte Carlo cone (legacy M2) — honest label: 140 seeded paths ── */
+function drawCone(cvId){POSTRENDER.push(()=>{const cv=document.getElementById(cvId);if(!cv)return;
+  const W=cv.width=cv.clientWidth*2,H=cv.height=230*2,x=cv.getContext('2d');
+  const r=localRng('cone-'+ck('demo.seed')),N=170,P=140,paths=[];
+  for(let p=0;p<P;p++){let eq=Math.log(1000),row=[eq];for(let i=0;i<N;i++){eq+=0.011+(r()-0.5)*0.06;row.push(eq)}paths.push(row)}
+  const lo=Math.log(500),hi=Math.log(200000);
+  const py=v=>H-((v-lo)/(hi-lo))*H*0.9-H*0.05,px=i=>i/N*W;
+  x.fillStyle='#070B12';x.fillRect(0,0,W,H);
+  x.font='16px monospace';
+  [1000,10000,100000].forEach(g2=>{const y=py(Math.log(g2));x.strokeStyle='rgba(151,166,192,.18)';x.setLineDash([4,5]);x.beginPath();x.moveTo(0,y);x.lineTo(W,y);x.stroke();x.setLineDash([]);x.fillStyle='#67748C';x.fillText('$'+(g2/1000)+'k',W-70,y-5)});
+  const bands=[[0.1,0.9,'rgba(90,167,255,.08)'],[0.25,0.75,'rgba(90,167,255,.13)']];
+  bands.forEach(([a,b,col])=>{x.beginPath();
+    for(let i=0;i<=N;i++){const col2=paths.map(p=>p[i]).sort((m,n2)=>m-n2);x[i?'lineTo':'moveTo'](px(i),py(col2[Math.floor(P*a)]))}
+    for(let i=N;i>=0;i--){const col2=paths.map(p=>p[i]).sort((m,n2)=>m-n2);x.lineTo(px(i),py(col2[Math.floor(P*b)]))}
+    x.closePath();x.fillStyle=col;x.fill()});
+  x.beginPath();for(let i=0;i<=N;i++){const col2=paths.map(p=>p[i]).sort((m,n2)=>m-n2);x[i?'lineTo':'moveTo'](px(i),py(col2[Math.floor(P*0.5)]))}
+  x.strokeStyle='#5AA7FF';x.lineWidth=2.5;x.stroke();
+  x.beginPath();paths[7].forEach((v,i)=>x[i?'lineTo':'moveTo'](px(i),py(v)));x.strokeStyle='rgba(214,178,94,.85)';x.lineWidth=1.6;x.stroke();
+  const hit=paths.filter(p=>Math.max(...p)>=Math.log(100000)).length;
+  x.fillStyle='#E9EEF6';x.font='18px monospace';x.fillText('P(touch $100k ≤ '+N+' trades) ≈ '+Math.round(hit/P*100)+'% · 140 seeded paths · exp +1.04R · win 34% · payoff 3.9:1 · DEMO',14,28);
+})}
+
+/* delegated input events for sliders — no inline handlers anywhere */
+document.addEventListener('input',e=>{const el=e.target.closest('[data-cmdin]');if(el)CMD.run(el.dataset.cmdin,el.dataset.arg,el)});
 /* ═══════════ ENGINE · demo heartbeat — one loop, no decorator towers ═══════════
    The legacy stacked 13 render wrappers and two competing 1s intervals.
    Here: ONE 2s tick that mutates state, then targeted DOM patches. */
@@ -1999,6 +2319,8 @@ const ENGINE={
     /* ambient ledger telemetry */
     if(this.n%9===0){const seat=RNG.pick(SEATS.filter(s=>['15s','30s','1m','5m','10m'].includes(s.cad)));
       SVR.audit(seat.id+' '+seat.nm,'telemetry',RNG.pick(['heartbeat OK — lane clean, schema valid','cadence sweep complete — no anomalies','freshness stamp written to consciousness state','universe delta processed — no promotions this cycle']))}
+    if(typeof blotterStep==='function')blotterStep(this.n);
+    if(S.domain==='system'&&S.ws==='autonomy'&&S.autonomyLab&&this.n%4===0)render();
     /* targeted patches — full render only if user is on a live-updating view */
     renderTop();
     if(S.domain==='decisions'){const el=document.getElementById('pk-ttl');if(el){const p=pktBy(S.packet);if(p)el.textContent=fmtTTL(p)}}
