@@ -63,3 +63,22 @@ Unlike the legacy "P9 preservation registry" (which passed by checking that a fu
 | Per-seat forward plans ("the mesh always knows its next move") + reasoning streams | **SYSTEM → Agent Council** (deep-dive) |
 | Session progress bar · evidence vault · go-live QA gates · alert doctrine ("P0 interrupts life") | Top bar · Knowledge Base · Integrity · Alert Center |
 | Promotion economics ($30/day promoted vs $3k/day naive) | **MARKETS → Scanner** |
+
+## SYNCHRONY report organs (app x brain reconciliation, v13_4)
+
+| Report mandate | V12.1 home | Nature |
+|---|---|---|
+| Boot Self-Test S1-S8 (eight LAW smoke tests) | **SYSTEM → Integrity** — runs at every session open | REAL assertions against the live boundary |
+| Golden-Test Runner (GT fixtures, input/expected/actual) | **SYSTEM → Integrity** | REAL — 5 fixtures execute, diffs rendered verbatim |
+| Stress Range (failure library vs current build) | **SYSTEM → Integrity** | REAL — 4 scenarios execute |
+| Calibration Ledger (per-seat deciles, Brier) | **REVIEW → Performance** | Demo data, honest shape |
+| Ask Inbox (questions → answers embed as ground truth) | **REVIEW → Ask Inbox** | Interactive roundtrip works |
+| MHH Board (flaws, five steps, correction lines) | **REVIEW → AI Memory** | Demo data, honest shape |
+| Sample-Block Tracker (Douglas blocks, P&L blurred mid-block) | **REVIEW → Performance** | CSS-enforced psychology |
+| Barometer / Position Ledger (DET-LEDGER 1-4) | **MARKETS → Regime** (ambient strip) | Demo data |
+| Ivory paper-document packet + signature line (V9 crown jewel) | **DECISIONS → Packet Detail** | Restored |
+| Six Director self-audit answers per decision | **DECISIONS → Packet Detail** | Restored |
+| Zone-click four-questions inspector | **RESEARCH → Chart** | Interactive |
+| Config changelog (failure→fix per release) + rules_version badge | **SYSTEM → Config** + rail foot | Real history of this build |
+| Universe tier caps (t1_max 300 / watch 50 / promotions 40) + health SLAs + the hard invariant | **CONFIG** + **MARKETS → Scanner** + **SYSTEM → Health** | Config + spec surfaces |
+| needs_user_rule → ask-card conversion (SIM-0001 refusal doctrine) | **REVIEW → Autopsy** (AUT-118 button) | Interactive |

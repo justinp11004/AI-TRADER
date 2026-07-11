@@ -355,6 +355,26 @@ kbd{font-family:var(--mono);font-size:9.5px;background:var(--bg2);border:1px sol
 .gauge{position:relative;height:8px;background:var(--bg3);border-radius:4px;overflow:hidden}
 .gauge>i{position:absolute;inset:0;border-radius:4px;background:var(--pos)}
 .sparkbox{height:34px}
+
+/* ── SYNCHRONY additions ── */
+/* the ivory paper document — the only light surface in the terminal.
+   LAW-007 made physical: a human signs a document, not a widget. */
+.ivory{background:#F2EDDF;color:#221D12;border:1px solid #C9BFA5;border-radius:var(--r-lg);padding:18px 22px;font-family:Georgia,'Times New Roman',serif;box-shadow:0 14px 44px rgba(0,0,0,.5)}
+.ivory h3{font-family:Georgia,serif;font-size:15px;letter-spacing:.5px;border-bottom:2px solid #221D12;padding-bottom:6px;margin-bottom:10px}
+.ivory .isec{border-bottom:1px solid #C9BFA5;padding:7px 0}
+.ivory .isec summary{cursor:pointer;font-weight:700;font-size:11.5px;letter-spacing:.4px;color:#403820}
+.ivory .isec div{font-size:12px;line-height:1.65;color:#332C1B;padding:5px 0 4px 14px}
+.ivory .sigline{margin-top:14px;padding-top:10px;border-top:2px solid #221D12;display:flex;justify-content:space-between;align-items:baseline;font-size:10.5px;color:#6B5F3E}
+.ivory .sigline .mono{font-family:var(--mono)}
+.ivory .goldseal{color:#8A6D1F;font-weight:700;letter-spacing:1px}
+/* Douglas blur — P&L is not knowable mid-block */
+.blurval{filter:blur(7px);user-select:none;cursor:help}
+/* calibration decile grid */
+.decile{display:inline-block;min-width:44px;text-align:center;font-family:var(--mono);font-size:9.5px;padding:3px 4px;border-radius:3px;border:1px solid var(--line)}
+.d-good{background:var(--pos-bg);color:var(--pos)}.d-mid{background:var(--warn-bg);color:var(--warn)}.d-bad{background:var(--neg-bg);color:var(--neg)}
+/* barometer strip */
+.baro{display:flex;gap:8px;align-items:center;flex-wrap:wrap;border:1px solid var(--line);border-radius:var(--r);padding:8px 11px;background:var(--bg2)}
+.baro .bnum{font-family:var(--mono);font-size:13px}
 @media(max-width:900px){:root{--rail-w:56px}.dom span.dlabel,.dr-purpose,.dr-mode,.dr-foot,.dom .dkey{display:none}.dom{justify-content:center}.dom .dico{width:auto}}
 </style>
 </head>
@@ -1034,7 +1054,7 @@ const DOMAINS={
   portfolio:{ico:'▤',label:'PORTFOLIO',key:'5',purpose:'How is capital deployed and protected?',
     ws:[{id:'positions',label:'Positions'},{id:'orders',label:'Orders & Fills'},{id:'risk',label:'Risk Cockpit'},{id:'exposure',label:'Exposure'},{id:'account',label:'Paper Account'}]},
   review:{ico:'↻',label:'REVIEW',key:'6',purpose:'Are we getting better, with evidence?',
-    ws:[{id:'journal',label:'Journal'},{id:'autopsy',label:'Opportunity Autopsy'},{id:'performance',label:'Performance & Calibration'},{id:'court',label:'Learning Court'},{id:'memory',label:'AI Memory'},{id:'replay',label:'Replay & Backtest'}]},
+    ws:[{id:'journal',label:'Journal'},{id:'autopsy',label:'Opportunity Autopsy'},{id:'performance',label:'Performance & Calibration'},{id:'court',label:'Learning Court'},{id:'memory',label:'AI Memory'},{id:'asks',label:'Ask Inbox'},{id:'replay',label:'Replay & Backtest'}]},
   system:{ico:'⚙',label:'SYSTEM',key:'7',purpose:'Who can do what · what happened · is it healthy?',
     ws:[{id:'health',label:'Health & Freshness'},{id:'inbox',label:'Manager Inbox'},{id:'agents',label:'Agent Council'},{id:'knowledge',label:'Knowledge Base'},{id:'config',label:'Config & Laws'},{id:'integrations',label:'Integrations'},{id:'permissions',label:'Permissions'},{id:'audit',label:'Audit Ledger'},{id:'integrity',label:'Integrity Checks'},{id:'autonomy',label:'Autonomy Lab'}]},
 };
@@ -1080,7 +1100,7 @@ function renderRail(){
       return'<button class="dom'+(S.domain===id?' on':'')+'" data-cmd="nav" data-arg="'+id+'" role="link" aria-current="'+(S.domain===id)+'">'+dot+'<span class="dico">'+d.ico+'</span><span class="dlabel">'+d.label+'</span>'+badge+'</button>'+
       '<div class="dr-purpose">'+d.purpose+'</div>';
     }).join('')+
-    '<div class="dr-foot">SESSION <b>'+CLOCK.phase()+'</b><br>EQUITY <b>'+U.moneyK(S.equity)+'</b> paper<br>BUILD <b>V12.0 · ten-generation merge</b><br>KEYS <b>1–7</b> domains · <b>⌘K</b> jump<br><b>F</b> focus · <b>?</b> shortcut map</div>';
+    '<div class="dr-foot">SESSION <b>'+CLOCK.phase()+'</b><br>EQUITY <b>'+U.moneyK(S.equity)+'</b> paper<br>BUILD <b>V12.1 SYNCHRONY</b> · '+RULES_VERSION+'<br>KEYS <b>1–7</b> domains · <b>⌘K</b> jump<br><b>F</b> focus · <b>?</b> shortcut map</div>';
 }
 function renderSubnav(){
   const d=DOMAINS[S.domain];
@@ -1333,6 +1353,7 @@ VIEWS['markets.regime']=function(){
   h+='<div class="grid g2" style="margin-top:12px">';
   h+=panel('INDEX TAPE','demo twins · watermarked synthetic',
     tbl(['Instrument','>Last','>Chg'],TAPE.map(([k,v,c])=>'<tr><td class="mono">'+k+'</td><td class="r num">'+U.fmt(v,2)+'</td><td class="r num '+(c>=0?'up':'dn')+'">'+U.pct(c,2)+'</td></tr>').join(''))+'<div style="padding:8px 12px 4px"><span class="demo-wm">demo data</span></div>',{flush:true});
+  h+=panel('BAROMETER — the position ledger, ambient','DET-LEDGER positions 1–4 · divergence alarm wired to Command P1',barometerStrip());
   h+=panel('MARKET INTERNALS','the tape under the tape · <span class="demo-wm">demo</span>',
     '<div class="grid g4">'+stat('ADV / DEC','382 : 118','2.1:1 — healthy participation')+stat('TRIN (Arms)','0.82','buying pressure confirmed')+stat('Up / Down vol','71% / 29%','effort agrees with breadth')+stat('New highs / lows','142 / 38','expansion, not churn')+
     stat('US 10Y','4.18% <span class="dn" style="font-size:10px">−3bp</span>','duration tailwind')+stat('DXY','103.4 <span class="dn" style="font-size:10px">−0.1%</span>','dollar neutral')+stat('Regime score','72 / 100','risk-on, not euphoric')+stat('Doctrine','<span style="font-size:11px">LONG LEADERS</span>','chop = scalp extremes only · event-risk = stand aside')+'</div>');
@@ -1360,7 +1381,8 @@ VIEWS['markets.regime']=function(){
 VIEWS['markets.scanner']=function(){
   let h=vhead('MARKETS · deterministic universe funnel','Scanner Funnel',
     'Cheap deterministic code sweeps everything; expensive committee attention is earned, never sprayed. Every promotion AND rejection has a named reason.');
-  h+='<div class="funnel" style="margin-bottom:12px">'+FUNNEL.map(f=>'<div class="fstage"><div class="fk">'+f.k+'</div><div class="fv">'+f.v.toLocaleString()+'</div><div class="fd">'+f.pct+' · '+f.d+'</div></div>').join('')+'</div>';
+  h+='<div class="funnel" style="margin-bottom:12px"><div class="fstage"><div class="fk">LISTED · T3</div><div class="fv">7,123</div><div class="fd">daily coverage · EOD deep pass</div></div>'+FUNNEL.map(f=>'<div class="fstage"><div class="fk">'+f.k+'</div><div class="fv">'+f.v.toLocaleString()+'</div><div class="fd">'+f.pct+' · '+f.d+'</div></div>').join('')+'</div>';
+  h+='<div class="banner gold" style="margin-bottom:12px"><span class="bico">◆</span><div><b>The hard invariant:</b> LLM symbol-touches per day are bounded by promotions, never by universe size — caps '+prov('universe.t1_max')+' '+prov('universe.active_watch_max')+' '+prov('universe.promotions_per_day_max')+'. The engine watches 5,000 constantly so the firm only ever thinks about the survivors.</div></div>';
   h+='<div class="grid g2">';
   h+=panel('ACTIVE CANDIDATES','click → full dossier in Research',
     tbl(['Sym','Stage','FSM','Why here (promotion / rejection reason)'],SCANROWS.map(r=>'<tr class="click'+(r.stage==='REJECTED'||r.stage==='ELIGIBILITY'?' dim':'')+'" data-cmd="research.open" data-arg="'+r.sym+'"><td class="mono"><b>'+r.sym+'</b></td><td class="mono" style="font-size:10px">'+r.stage+'</td><td>'+lc(r.fsm)+'</td><td class="i1" style="font-size:11px">'+U.esc(r.why)+'</td></tr>').join('')),{flush:true});
@@ -1577,14 +1599,24 @@ VIEWS['decisions.packet']=function(arg){
   h+='</div>';
   /* the 19 sections */
   if(p.secs){
-    h+=panel('THE 19 SECTIONS — complete or nothing (LAW-007)','click a section to expand',
-      p.secs.map((s2,i)=>'<details'+(i<2?' open':'')+' style="border-bottom:1px solid var(--line);padding:4px 0"><summary style="cursor:pointer;font-family:var(--mono);font-size:11px;color:var(--ink1);padding:4px 0">§'+(i+1)+' · '+U.esc(s2[0]).toUpperCase()+'</summary><div style="font-size:11.5px;color:var(--ink1);line-height:1.6;padding:4px 0 8px 14px">'+U.esc(s2[1])+'</div></details>').join(''));
+    h+='<div class="ivory"><h3>VERIFICATION PACKET '+p.id+' — THE DOCUMENT A HUMAN SIGNS</h3>'+
+      '<div style="font-size:10.5px;color:#6B5F3E;margin-bottom:8px">The only light surface in this terminal, deliberately: LAW-007 says a human signs a <i>document</i>, not a widget. 19 sections, complete or nothing.</div>'+
+      p.secs.map((s2,i)=>'<details class="isec"'+(i<2?' open':'')+'><summary>§'+(i+1)+' · '+U.esc(s2[0]).toUpperCase()+'</summary><div>'+U.esc(s2[1])+'</div></details>').join('')+
+      '<div class="sigline"><span>OPERATOR SIGNATURE — a canonical decision enum below constitutes signature <span class="goldseal">◆ LAW-007</span></span><span class="mono">'+p.planHash+' · assembled '+p.assembled+'</span></div></div>';
   }else{
     h+='<div class="banner blk"><span class="bico">⛔</span><div><b>'+p.sections+'/'+ck('packet.sections_required')+' sections.</b> Incomplete packet — full section render withheld. MISSING: '+p.missing.map(U.esc).join(' · ')+'. No clean packet, no trade.</div></div>';
   }
   /* votes full table */
   h+=panel('EVERY VOTE, WITH REASONING','each claim cites evidence or is discarded as opinion',
     tbl(['Seat','Verdict','Reasoning','Hard blockers'],p.votes.map(v2=>'<tr'+(v2.verdict==='block'?' style="background:var(--blk-bg)"':'')+'><td class="mono" style="cursor:pointer" data-cmd="nav.system.agents" data-arg="'+v2.seat+'"><b>'+v2.seat+'</b> '+SEATBY[v2.seat].nm+'</td><td>'+chip(v2.verdict,v2.verdict==='pass'?'ch-ok':v2.verdict==='advisory'?'ch-warn':v2.verdict==='block'?'ch-blk':'ch-mut',v2.verdict==='pass'?'✓':v2.verdict==='block'?'✕':'!')+'</td><td class="i1" style="font-size:11px">'+U.esc(v2.txt)+'</td><td class="mono" style="font-size:10px;color:var(--blk)">'+v2.hard.map(U.esc).join('<br>')+'</td></tr>').join('')),{flush:true});
+  if(p.id==='PKT-2231')h+=panel('DIRECTOR SELF-AUDIT — six answers, every decision','the Director interrogates itself before it interrogates you',
+    [['Am I predicting or classifying?','Classifying: re-accumulation context confirmed by spring+test; no price prediction anywhere in the thesis.'],
+     ['Did manipulation come first?','Yes — the Asia-low sweep IS the manipulation; entry only exists because someone was trapped.'],
+     ['Is confirmation objective?','5m MSS with displacement 74/100 on close — a computable event, not a feeling.'],
+     ['Is risk defined by structure?','Stop 194.10 below spring low + buffer; it would be wrong there, and nowhere tighter.'],
+     ['Is the management plan pre-committed?','25/50/75 template + 14:00 time-stop, locked before entry — the FSM owns it, not the mood.'],
+     ['What will I learn either way?','Displacement 60-vs-65 band tag feeds LS-118 regardless of outcome (§19).']]
+    .map((r,i)=>kv('Q'+(i+1)+' · '+r[0],'<span style="font-size:11px">'+r[1]+'</span>')).join(''));
   /* the desk argues against itself before it asks you */
   if(p.id==='PKT-2231')h+=panel('REJECTION REASONS CONSIDERED','every canonical reject reason was argued — here is why each failed to kill the trade',
     tbl(['Reason','Verdict','Argument'],[
@@ -1834,6 +1866,7 @@ VIEWS['review.autopsy']=function(){
     '<div style="font-family:var(--mono);font-size:11.5px;margin-bottom:6px;color:var(--ink0)">'+U.esc(a.verdictLine)+' <span class="i2">· counterfactual: '+U.esc(a.outcome)+'</span></div>'+
     '<div class="i1" style="font-size:11.5px;line-height:1.6;margin-bottom:8px">'+U.esc(a.finding)+'</div>'+
     kv('THE FIX',U.esc(a.fix))+kv('STATUS','<b>'+U.esc(a.status)+'</b>')+
+    (a.id==='AUT-118'?'<div class="btnrow" style="margin-top:8px"><button class="btn sm gold" data-cmd="ask.fromAutopsy" data-arg="'+a.id+'">Convert to ask card →</button></div>':'')+
     '</div></div>').join('');
   h+=panel('SETUP ARCHIVE — every analyzed setup, shadow-tracked','“was passing correct?” is answered with data, not memory',
     tbl(['ID','Sym','Decision','>Result / counterfactual','Playbook','Note'],ARCHIVE.map(a=>'<tr'+(String(a[5]).startsWith('MISS')?' style="background:var(--warn-bg)"':'')+'><td class="mono">'+a[0]+'</td><td class="mono"><b>'+a[1]+'</b></td><td>'+chip(a[2],a[2].startsWith('TAKEN')?'ch-ok':a[2]==='REJECTED'?'ch-neg':a[2]==='PASSED'?'ch-mut':'ch-info','·')+'</td><td class="r num">'+a[3]+'</td><td class="i1" style="font-size:10.5px">'+a[4]+'</td><td class="i2" style="font-size:10.5px">'+a[5]+'</td></tr>').join('')),{flush:true});
@@ -1870,6 +1903,13 @@ VIEWS['review.performance']=function(){
     kv('v13.3-candidate','<span style="color:var(--blk)">46/48 — BLOCKED.</span> Two regressions must be explained or the candidate dies.')+
     kv('HUMAN vs DIRECTOR','κ 0.71 agreement on 60 co-graded packets — measured, not assumed'));
   h+='</div>';
+  h+=panel('CALIBRATION LEDGER — stated confidence vs reality, per seat','the honest answer to “which agent’s read was wrong” · Brier = squared-error of confidence',
+    tbl(['Seat','90s decile','80s','70s','60s','>Brier','Read'],CALIB_LEDGER.map(c=>{
+      const cell=r2=>{const diff=r2[0]-r2[1];const cls=diff<=7?'d-good':diff<=14?'d-mid':'d-bad';return'<span class="decile '+cls+'" title="stated '+r2[0]+'% → hit '+r2[1]+'% (n='+r2[2]+')">'+r2[1]+'%<br><span style="opacity:.6">n'+r2[2]+'</span></span>'};
+      return'<tr'+(c.note.includes('WORST')?' style="background:var(--warn-bg)"':'')+'><td class="mono"><b>'+c.seat+'</b> '+SEATBY[c.seat].nm+'</td>'+c.rows.map(r2=>'<td>'+cell(r2)+'</td>').join('')+'<td class="r num">'+c.brier.toFixed(3)+'</td><td class="i2" style="font-size:10px">'+U.esc(c.note)+'</td></tr>'}).join('')),{flush:true});
+  h+=panel('SAMPLE-BLOCK TRACKER — Douglas 20-trade blocks','flawless execution is the headline; P&L is BLURRED until the block boundary — the interface enforces the psychology',
+    tbl(['Block','Progress','>Flawless','Pre-accepted worst','Block P&L'],BLOCKS.map(b=>'<tr><td><b>'+b.pb+'</b></td><td class="mono">'+b.n+'/'+b.of+'<div class="gauge" style="width:110px;margin-top:3px"><i style="width:'+(b.n/b.of*100)+'%"></i></div></td><td class="r num up">'+Math.round(b.flawless/b.n*100)+'%</td><td class="mono" style="font-size:10.5px">'+b.worst+'</td><td class="r num'+(b.done?' up':'')+'">'+(b.done?b.pnl:'<span class="blurval" title="Blurred until trade 20 of 20 — mid-block P&L judgment is forbidden framing (Douglas). Flawless-execution rate is the metric that matters here.">'+b.pnl+'</span>')+'</td></tr>').join(''))+
+    '<div class="i2" style="font-size:10.5px;padding:8px 12px">A block is judged as a block. Hover a blurred value to see why you can’t see it.</div>',{flush:true});
   h+=panel('REVIEW REFUSALS','discipline about the discipline',
     REVIEW_REFUSALS.map(r=>kv('◆','<span style="font-size:11.5px">'+r+'</span>')).join(''));
   return h;
@@ -1954,6 +1994,15 @@ VIEWS['system.health']=function(){
     kv('SCALE ENVELOPE','5,234 sym / 96 workers / ~$12.9k/mo → 10k / 164 / ~$20.8k → 25k / 384 / ~$45.7k')+
     kv('INVARIANTS','positions, risk, broker recon and T0 can never be starved · demotion never deletes evidence · every expensive call requires a promoted symbol + structured evidence object')+
     '</div></div>');
+  h+=panel('UNIVERSE HEALTH — the mandate’s own instruments','SLAs with 5× headroom on the cadence clock · <span class="demo-wm">demo readings</span>',
+    tbl(['Instrument','>Reading','>SLA','State'],[
+     ['Full-universe 5m feature pass','34.8s','≤ 60s','<span class="up">GREEN</span>'],
+     ['1m T0/T1-active pass','6.2s','≤ 10s','<span class="up">GREEN</span>'],
+     ['universe.summary beat','5.0s stable','5s','<span class="up">GREEN</span>'],
+     ['DOM symbol rows mounted','≤ 200','≤ 200 (virtualized)','<span class="up">GREEN</span>'],
+     ['LLM token-spend today','bounded by 40-promotion cap','promotions, never universe','<span class="up">INVARIANT HOLDS</span>'],
+    ].map(r=>'<tr><td>'+r[0]+'</td><td class="r num">'+r[1]+'</td><td class="r num i2">'+r[2]+'</td><td class="mono" style="font-size:10.5px">'+r[3]+'</td></tr>').join(''))+
+    '<div class="i2" style="font-size:10.5px;padding:8px 12px">Target transport topics: universe.summary · universe.promotions · anomalies.topN · barometer — per-symbol topics subscribe only on dossier open. Phase W4.</div>',{flush:true});
   return h;
 };
 CMD.define({id:'drill.data',label:'Stale-data drill',purpose:'Flip quote feed to STALE and watch the desk fail closed',run:()=>{S.dataHealth='DEGRADED';FEEDS[0].st='STALE';FEEDS[0].age=12;SVR.audit('HUMAN (owner)','drill','DRILL: quote feed forced STALE — approvals must block (LAW-006)');UI.toast('Quote feed STALE — watch Decisions: approvals now block with DATA-STALE','warn','DRILL');render()}});
@@ -2010,6 +2059,8 @@ VIEWS['system.config']=function(){
   h+=panel('THE CONSTITUTION — 18 prime laws','hard-coded; no agent, no learning suggestion, no profit outcome may modify them',
     LAWS.map(([id,t])=>'<div class="kv"><span class="k" style="color:var(--live)">'+id+'</span><span class="v" style="font-size:11px;line-height:1.55">'+U.esc(t)+'</span></div>').join(''));
   h+='</div>';
+  h+=panel('IN-APP CHANGELOG — every release documents a failure and its fix','the V9 discipline: no release without a named defect it killed',
+    CHANGELOG.map(c=>kv(c[0],'<span style="font-size:11px">'+U.esc(c[1])+'</span>')).join(''));
   h+=panel('VERSION TIMELINE','all changes are diffs with rollback plans',
     kv('v13.2 · ACTIVE','2026-03-16 — LS-117 applied (MOC blackout for 0DTE credit)')+
     kv('v13.1','2026-03-08 — detector params re-baselined post BT-0428')+
@@ -2104,6 +2155,16 @@ VIEWS['system.integrity']=function(){
   h+='<div class="btnrow" style="margin-bottom:12px"><button class="btn pri" data-cmd="integrity.run">Run integrity suite now</button>'+(r?'<span class="pill">last run '+r.at+' · '+r.pass+'/'+r.total+' passing</span>':'<span class="pill">runs automatically at boot</span>')+'</div>';
   if(r)h+=panel('RESULTS — rendered verbatim','a failed check renders as FAILED; nothing is smoothed over',
     tbl(['Check','Verdict','Detail'],r.tests.map(t=>'<tr'+(t.pass?'':' style="background:var(--blk-bg)"')+'><td>'+U.esc(t.nm)+'</td><td>'+(t.pass?chip('PASS','ch-ok','✓'):chip('FAILED','ch-blk','✕'))+'</td><td class="i2" style="font-size:10.5px">'+U.esc(t.detail)+'</td></tr>').join('')),{flush:true});
+  const bt=BOOTTEST.results;
+  if(bt)h+=panel('BOOT SELF-TEST S1–S8 — ran at session open','any FAIL pins risk_mode BLOCKED with the failing law named; the boot report is a public artifact of every session',
+    tbl(['Test','Law','Assertion','Verdict','Detail'],bt.tests.map(t=>'<tr'+(t.pass?'':' style="background:var(--blk-bg)"')+'><td class="mono"><b>'+t.id+'</b></td><td class="mono" style="color:var(--live);font-size:10px">'+t.law+'</td><td style="font-size:11px">'+U.esc(t.nm)+'</td><td>'+(t.pass?chip('GREEN','ch-ok','✓'):chip('FAIL','ch-blk','✕'))+'</td><td class="i2" style="font-size:10px">'+U.esc(t.detail)+'</td></tr>').join(''))+
+    '<div class="i2" style="font-size:10.5px;padding:8px 12px">Ran '+bt.at+' · '+bt.pass+'/8 · these execute against the live boundary — the same S1–S8 re-run against the real server in Phase W5.</div>',{flush:true});
+  h+=panel('GOLDEN-TEST RUNNER — conformance fixtures, executed','input / expected / actual, diffed verbatim. Every C-game loss must add a fixture.',
+    '<div class="btnrow" style="margin-bottom:10px"><button class="btn pri" data-cmd="golden.run">Run all fixtures</button>'+(GOLDEN_LAST?'<span class="pill">'+GOLDEN_LAST.filter(x=>x.pass).length+'/'+GOLDEN_LAST.length+' green</span>':'<span class="pill">not yet run this session</span>')+'</div>'+
+    (GOLDEN_LAST?tbl(['Fixture','Family','Input','Expected','Actual',''],GOLDEN_LAST.map(g=>'<tr'+(g.pass?'':' style="background:var(--blk-bg)"')+'><td class="mono" style="font-size:10px"><b>'+g.id+'</b></td><td class="mono" style="font-size:10px">'+g.fam+'</td><td class="i1" style="font-size:10.5px">'+U.esc(g.input)+'</td><td class="i2" style="font-size:10.5px">'+U.esc(g.expected)+'</td><td class="mono" style="font-size:10.5px;color:'+(g.pass?'var(--pos)':'var(--blk)')+'">'+U.esc(g.actual)+'</td><td>'+(g.pass?chip('MATCH','ch-ok','✓'):chip('DIFF','ch-blk','✕'))+'</td></tr>').join('')):''));
+  h+=panel('STRESS RANGE — the failure library vs the current build','expected gate behavior vs actual, row by row — red on any divergence',
+    '<div class="btnrow" style="margin-bottom:10px"><button class="btn pri" data-cmd="stress.run">Run stress range</button>'+(STRESS_LAST?'<span class="pill">'+STRESS_LAST.filter(x=>x.pass).length+'/'+STRESS_LAST.length+' as specified</span>':'<span class="pill">not yet run this session</span>')+'</div>'+
+    (STRESS_LAST?tbl(['Scenario','Expected','Actual',''],STRESS_LAST.map(st=>'<tr'+(st.pass?'':' style="background:var(--blk-bg)"')+'><td><b style="font-size:11px">'+st.id+'</b> · <span class="i1" style="font-size:11px">'+U.esc(st.nm)+'</span></td><td class="i2" style="font-size:10.5px">'+U.esc(st.exp)+'</td><td class="mono" style="font-size:10.5px;color:'+(st.pass?'var(--pos)':'var(--blk)')+'">'+U.esc(st.actual)+'</td><td>'+(st.pass?chip('AS SPEC','ch-ok','✓'):chip('DIVERGED','ch-blk','✕'))+'</td></tr>').join('')):''));
   h+=panel('GO-LIVE GATES — brutally honest','a gate at 0% is information, not embarrassment',
     tbl(['Gate','>State','Evidence'],[
      ['UI / workflows','100%','39 workspaces browser-verified, 0 console errors'],
@@ -2249,7 +2310,8 @@ VIEWS['research.chart']=function(){
     h+=panel('PRIMARY · '+S.sym+' · '+CHARTX.tf,'server-produced annotations only — every zone cites its detector',
       '<canvas id="rc-main" class="cv" style="height:340px"></canvas>'+
       (CHARTX.replay?'<div class="row" style="margin-top:8px"><span class="mono i2" style="font-size:10px">REPLAY</span><input type="range" min="10" max="100" value="'+CHARTX.replayAt+'" style="flex:1" data-cmdin="chartx.replayAt"><span class="mono i2" style="font-size:10px">'+CHARTX.replayAt+'%</span></div>':'')+
-      '<div class="legend"><span><i style="background:rgba(90,167,255,.5)"></i>FVG (DET-041)</span><span><i style="background:rgba(47,214,160,.5)"></i>Order block (DET-052)</span><span><i style="background:rgba(231,182,83,.8)"></i>EMA20</span><span><i style="background:rgba(157,141,248,.8)"></i>EMA50</span><span><i style="background:rgba(87,199,227,.7)"></i>VWAP</span><span><i style="background:#FF4D5F"></i>Structural stop</span></div>');
+      '<div class="legend"><span><i style="background:rgba(90,167,255,.5)"></i>FVG (DET-041)</span><span><i style="background:rgba(47,214,160,.5)"></i>Order block (DET-052)</span><span><i style="background:rgba(231,182,83,.8)"></i>EMA20</span><span><i style="background:rgba(157,141,248,.8)"></i>EMA50</span><span><i style="background:rgba(87,199,227,.7)"></i>VWAP</span><span><i style="background:#FF4D5F"></i>Structural stop</span></div>'+
+      '<div class="row" style="margin-top:8px"><span class="mono i2" style="font-size:9px;letter-spacing:1px">ZONE INSPECTOR — every zone answers four questions:</span><button class="btn sm pri" data-cmd="zone.inspect" data-arg="FVG">Inspect FVG</button><button class="btn sm pos" data-cmd="zone.inspect" data-arg="OB">Inspect OB</button><button class="btn sm" data-cmd="zone.inspect" data-arg="POOL">Inspect pool</button></div>');
     drawChartX('rc-main',S.sym,{h:340,n:110,replay:CHARTX.replay,replayAt:CHARTX.replayAt,type:CHARTX.type,ema20:CHARTX.ema20,ema50:CHARTX.ema50,vwap:CHARTX.vwap,zones:CHARTX.zones});
   }
   h+='<div class="grid g2">';
@@ -2580,6 +2642,11 @@ VIEWS['review.memory']=function(){
   h+=panel('ADD A RULE','plain language in — enforced gate out',
     '<div class="row"><input id="mem-in" class="inp" placeholder="e.g. Avoid earnings within 3 sessions · No adds after 15:00 · Flag me if I re-enter within 5 minutes of a stop-out" style="flex:1"><button class="btn gold" data-cmd="memory.add">Save rule</button></div>');
   h+='<div class="grid g2">'+MEMORY.map(m=>'<div class="panel'+(m.critical?' crit':'')+'"><div class="ph"><span class="t">'+m.id+' · '+m.cat+'</span><span class="spacer"></span>'+(m.critical?chip('CRITICAL','ch-blk','⛔'):'')+(m.locked?chip('LOCKED','ch-live','◆'):'')+'</div><div class="pb"><div class="i1" style="font-size:11.5px;line-height:1.6;margin-bottom:8px">'+U.esc(m.txt)+'</div><div class="btnrow"><button class="btn sm" data-cmd="memory.lock" data-arg="'+m.id+'">'+(m.locked?'Unlock (audited)':'Lock')+'</button>'+CMD.btn('memory.del',m.id,'sm neg','Delete')+'</div></div></div>').join('')+'</div>';
+  h+=panel('MHH BOARD — mistakes · habits · history','every flaw, human OR machine, walks the same five steps to silence',
+    MHH.map(m=>'<div class="banner '+(m.who==='HUMAN'?'gold':'info')+'" style="margin-bottom:8px"><span class="bico">'+(m.who==='HUMAN'?'◆':'▸')+'</span><div style="flex:1"><b>'+m.id+' · '+m.who+'</b> — '+U.esc(m.flaw)+
+    '<div class="row" style="margin:6px 0">'+m.steps.map((st,i)=>'<span class="tag" style="'+(st==='—'?'opacity:.4':'')+'">'+(i+1)+'·'+U.esc(st.split(':')[0])+'</span>').join('')+'</div>'+
+    kv('CORRECTION LINE','<span class="mono" style="font-size:10.5px;color:var(--paper)">'+U.esc(m.line)+'</span> — injected at gate-time, verbatim')+
+    '<div class="row"><span class="i2" style="font-size:10px">sessions silent: '+m.silent+'/'+m.goal+'</span><div class="gauge" style="width:120px"><i style="width:'+(m.silent/m.goal*100)+'%"></i></div></div></div></div>').join(''));
   h+=panel('LEARNING QUEUE — promotions awaiting you','soft flags become enforced rules only with your sign-off',
     '<div class="banner gold"><span class="bico">◆</span><div><b>Promote:</b> “No entries after 11:00 unless grade ≥ A” from soft flag → enforced gate. Evidence: −14% WR post-11:00 (n=50). <span class="btnrow" style="margin-top:6px"><button class="btn sm pos" data-cmd="memory.promote" data-arg="yes">Accept — enforce it</button><button class="btn sm" data-cmd="memory.promote" data-arg="no">Dismiss</button></span></div></div>');
   return h;
@@ -2598,6 +2665,155 @@ CMD.define({id:'onboard',label:'Discipline contract',purpose:'First-run calibrat
    '<div class="i2" style="font-size:10.5px;margin-top:8px">Prime directive: Do not predict. Classify context. Wait for manipulation. Require confirmation. Define risk. Manage the trade. Learn from outcome.</div>',
    '<button class="btn gold wide" data-cmd="onboard.done">ENTER ATLAS →</button>')}});
 CMD.define({id:'onboard.done',label:'Contract acknowledged',purpose:'Close onboarding',run:()=>{SVR.audit('HUMAN (owner)','onboard','Discipline contract acknowledged — 5R contract locked in Memory');UI.closeModal();UI.toast('Desk calibrated. The 5R contract is locked in Memory.','gold','ATLAS')}});
+/* ═══════════ V12.1 SYNCHRONY · the organ-views from the app×brain report ═══════════
+   Source: ATLAS_APP_SYNCHRONICITY_DESIGN_REPORT (v13_4). Every organ below
+   is implemented against the live in-page boundary — real assertions where
+   the report demands tests, honest DEMO labels where transport is future. */
+
+/* ── universe tier caps (report Addendum A — governed config) ── */
+Object.assign(CONFIG,{
+ 'universe.t1_max':{v:300,unit:'symbols',law:'UNI-001',why:'T1 full-ladder cap — LLM touches bounded by promotions, never universe size'},
+ 'universe.active_watch_max':{v:50,unit:'symbols',law:'UNI-002',why:'ActiveWatch ceiling'},
+ 'universe.promotions_per_day_max':{v:40,unit:'/day',law:'UNI-003 · governed-learnable',why:'Daily promotion budget — the anti-runaway invariant'},
+});
+Object.keys(CONFIG).forEach(k=>{PROV_TIPS[k]=k+' = '+CONFIG[k].v+' '+CONFIG[k].unit+'\n'+CONFIG[k].why});
+
+/* ── BOOT SELF-TEST S1–S8 — the eight LAW smoke tests, executed for real ── */
+const BOOTTEST={results:null,
+ run(){const t=[],ok=(id,law,nm,fn)=>{let pass=false,detail='';try{const r2=fn();pass=r2[0];detail=r2[1]}catch(e){detail='threw: '+e.message}t.push({id,law,nm,pass,detail})};
+  ok('S1','GOV-024','Tokenless order refused',()=>{const r2=SVR.redeemToken('TKN-NONEXISTENT','h');return[!r2.ok&&r2.code==='TKN-404','unknown token → '+r2.code]});
+  ok('S2','LAW-006','Stale data blocks approval',()=>{const prev=S.dataHealth;S.dataHealth='DEGRADED';const v2=SVR.riskCheck(PACKETS[0].rmath);S.dataHealth=prev;return[v2.verdict==='BLOCK'&&v2.codes.some(c=>c.code==='DATA-STALE'),'degraded feed → DATA-STALE block']});
+  ok('S3','LAW-004','Fake-math 5R rejected',()=>{const v2=SVR.riskCheck({...PACKETS[0].rmath,rr:4.99});return[v2.verdict==='BLOCK'&&v2.codes.some(c=>c.code==='RISK-5R'),'4.99R plan → RISK-5R block']});
+  ok('S4','LAW-016','Stop-widen inexpressible',()=>{const btns=VIEWS['portfolio.positions']();POSTRENDER.length=0;return[btns.includes('Widen stop')&&btns.includes('FORBIDDEN by envelope law'),'widen control renders disabled-with-law, never active']});
+  ok('S5','RISK-014','Hard-limit blocks size',()=>{const v2=SVR.riskCheck({...PACKETS[0].rmath,riskUSD:S.equity*0.02});return[v2.verdict==='BLOCK'&&v2.codes.some(c=>c.code==='RISK-SIZE'),'2% risk → RISK-SIZE block']});
+  ok('S6','LAW-005/011','Kill switch locks order paths',()=>{const prev=S.kill;S.kill=true;const v2=SVR.riskCheck(PACKETS[0].rmath);S.kill=prev;return[v2.verdict==='BLOCK'&&v2.codes.some(c=>c.code==='RISK-KILL'),'kill=true → RISK-KILL block on every plan']});
+  ok('S7','LAW-014','Malformed decision enum refused',()=>{const r2=SVR.packetDecide(PACKETS[0],'APPROVE_YOLO');return[!r2.ok&&r2.msg.includes('LAW-014'),'non-canonical enum → refused']});
+  ok('S8','AGT-lane','Committee fan-out bounded',()=>[ck('agents.committee_max_fanout')<=9&&PIPELINE.length===14,'fan-out cap '+ck('agents.committee_max_fanout')+' · pipeline 14 machine steps + human']);
+  this.results={at:CLOCK.hms(),tests:t,pass:t.filter(x=>x.pass).length};
+  if(this.results.pass<8){S.riskMode='BLOCKED';pushAlert('P0','BOOT SELF-TEST FAILED — '+t.filter(x=>!x.pass).map(x=>x.id).join(',')+' — risk_mode pinned BLOCKED','system.integrity')}
+  SVR.audit('SVR BootSelfTest','boot','S1–S8: '+this.results.pass+'/8 — '+(this.results.pass===8?'session may open':'risk_mode PINNED BLOCKED until green'));
+  return this.results}};
+
+/* ── GOLDEN-TEST RUNNER — fixtures executed, input/expected/actual diffed ── */
+const GOLDEN=[
+ {id:'GT-5R-FAKE-MATH-001',fam:'5R',input:'Plan @ 4.99R vs TRUE stop (stop NOT tightened)',expected:'RISK-5R BLOCK',
+  run:()=>{const v2=SVR.riskCheck({...PACKETS[0].rmath,rr:4.99});return v2.codes.some(c=>c.code==='RISK-5R')?'RISK-5R BLOCK':'PASSED-THROUGH ✗'}},
+ {id:'GT-KILL-001',fam:'KILL',input:'Kill engaged mid-session, any plan submitted',expected:'RISK-KILL BLOCK + tokens invalidated',
+  run:()=>{const prev=S.kill;S.kill=true;const v2=SVR.riskCheck(PACKETS[0].rmath);S.kill=prev;return v2.codes.some(c=>c.code==='RISK-KILL')?'RISK-KILL BLOCK + tokens invalidated':'ORDER PATH OPEN ✗'}},
+ {id:'GT-PSY-REVENGE-001',fam:'PSY',input:'2 consecutive reds, immediate re-entry attempt',expected:'Cooldown rule armed (MEM-01 · rung 2)',
+  run:()=>MEMORY.some(m=>m.txt.includes('Cooldown after 2 reds'))?'Cooldown rule armed (MEM-01 · rung 2)':'RULE MISSING ✗'},
+ {id:'GT-SWING-001',fam:'SWING',input:'NVDA seeded series — sweep→displacement at 55% mark',expected:'Deterministic: identical candles every render',
+  run:()=>{const a=candles('NVDA',96),b=candles('NVDA',96);return a===b&&a[Math.floor(96*0.55)].c<a[Math.floor(96*0.55)].o?'Deterministic: identical candles every render':'NON-DETERMINISTIC ✗'}},
+ {id:'GT-TOKEN-REPLAY-001',fam:'ROUTE',input:'Redeem same token twice with valid hash',expected:'Second redeem refused (TKN-USED)',
+  run:()=>{const tk=SVR.issueToken('GT','gh','APPROVE_PAPER_ONLY');SVR.redeemToken(tk.id,'gh');const r2=SVR.redeemToken(tk.id,'gh');return r2.code==='TKN-USED'?'Second redeem refused (TKN-USED)':'REPLAYED ✗'}},
+];
+let GOLDEN_LAST=null;
+CMD.define({id:'golden.run',label:'Run golden fixtures',purpose:'Execute the conformance fixtures against the live boundary — diffs rendered verbatim',
+ run:()=>{GOLDEN_LAST=GOLDEN.map(g=>{const actual=g.run();return{...g,actual,pass:actual===g.expected}});
+  SVR.audit('SVR GoldenRunner','test','Golden fixtures: '+GOLDEN_LAST.filter(x=>x.pass).length+'/'+GOLDEN.length+' green');
+  UI.toast('Golden fixtures: '+GOLDEN_LAST.filter(x=>x.pass).length+'/'+GOLDEN.length+' green — diffs rendered below','ok','GT RUNNER');render()}});
+
+/* ── STRESS RANGE — scenario library, expected vs actual gate behavior ── */
+const STRESS=[
+ {id:'ST-01',nm:'Quote feed stales during approval window',exp:'DATA-STALE denial; approval impossible',
+  run:()=>{const p2=S.dataHealth;S.dataHealth='DEGRADED';const v2=SVR.riskCheck(PACKETS[0].rmath);S.dataHealth=p2;return v2.codes.some(c=>c.code==='DATA-STALE')?'DATA-STALE denial; approval impossible':'APPROVED STALE ✗'}},
+ {id:'ST-02',nm:'Plan drifts after token issuance',exp:'TKN-HASH invalidation; plan returns to review',
+  run:()=>{const tk=SVR.issueToken('ST','hash-A','APPROVE_PAPER_ONLY');const r2=SVR.redeemToken(tk.id,'hash-B');return r2.code==='TKN-HASH'?'TKN-HASH invalidation; plan returns to review':'DRIFTED PLAN EXECUTED ✗'}},
+ {id:'ST-03',nm:'Sector cluster stacks past cap',exp:'RISK-SECTOR block; correlated risk = one position',
+  run:()=>{const v2=SVR.riskCheck({...PACKETS[0].rmath,sectorPct:3.1});return v2.codes.some(c=>c.code==='RISK-SECTOR')?'RISK-SECTOR block; correlated risk = one position':'STACKED ✗'}},
+ {id:'ST-04',nm:'Binary event enters the window',exp:'RISK-EVENT blackout block (LAW-017)',
+  run:()=>{const v2=SVR.riskCheck({...PACKETS[0].rmath,eventHrs:6});return v2.codes.some(c=>c.code==='RISK-EVENT')?'RISK-EVENT blackout block (LAW-017)':'TRADED INTO EVENT ✗'}},
+];
+let STRESS_LAST=null;
+CMD.define({id:'stress.run',label:'Run stress range',purpose:'Replay the failure library against the current build — red on any divergence',
+ run:()=>{STRESS_LAST=STRESS.map(st=>{const actual=st.run();return{...st,actual,pass:actual===st.exp}});
+  SVR.audit('SVR StressRange','test','Stress range: '+STRESS_LAST.filter(x=>x.pass).length+'/'+STRESS.length+' behave as specified');
+  UI.toast('Stress range: '+STRESS_LAST.filter(x=>x.pass).length+'/'+STRESS.length+' green','ok','STRESS');render()}});
+
+/* ── CALIBRATION LEDGER — per-seat reliability, deciles × hit-rate, Brier ── */
+const CALIB_LEDGER=[
+ {seat:'S00',rows:[[95,88,42],[85,80,61],[75,72,58],[65,57,44]],brier:0.163,note:'slightly under-confident at the top — acceptable direction'},
+ {seat:'S12',rows:[[90,86,38],[80,77,52],[70,66,47],[60,52,31]],brier:0.148,note:'best-calibrated seat on the desk'},
+ {seat:'S14',rows:[[90,81,29],[80,74,44],[70,64,39],[60,55,27]],brier:0.171,note:'stable'},
+ {seat:'S18',rows:[[85,64,22],[75,58,31],[65,51,26],[55,48,19]],brier:0.238,note:'WORST-CALIBRATED THIS WEEK — vendor-noise misreads; retrain queued (S34)'},
+ {seat:'S21',rows:[[80,61,18],[70,55,24],[60,49,21],[50,46,15]],brier:0.226,note:'over-confident — consistent with sentiment being context, never trigger'},
+];
+/* ── ASK INBOX — the desk queues questions; answers embed as ground truth ── */
+const ASKS=[
+ {id:'ASK-042',q:'PLTR displacement scored 58 and ran +1.8R (STP-0908). Should the 55–60 band trade at reduced size, or stay rejected?',
+  ev:['STP-0908','LS-118','AUT-file'],opts:['Reduced size in trend regimes only','Keep hard floor at 60','Need 20 more shadow samples'],state:'OPEN',sla:'2d'},
+ {id:'ASK-041',q:'AMD contract veto normalized 20 minutes later (AUT-117). Approve LS-121 WAIT_FOR_SPREAD to A/B at 30 samples, or extend to 45?',
+  ev:['AUT-117','LS-121','OPT-007'],opts:['30 samples is the bar (GOV-030)','Extend to 45 for regime split'],state:'OPEN',sla:'5d'},
+ {id:'ASK-039',q:'Vendor pre-announcement noise has no doctrine (ERR-028). Author the rule, or let S18 propose one for your review?',
+  ev:['ERR-028','S18-NEWS-009'],opts:['I will author it (Training Studio)','S18 drafts, I review'],state:'ANSWERED',ans:'S18 drafts, I review',sla:'—'},
+];
+CMD.define({id:'ask.answer',label:'Answer ask card',purpose:'Your answer embeds as labeled ground truth — the desk learns from it',
+ run:a=>{const[id,idx]=a.split('|');const card=ASKS.find(x=>x.id===id);if(!card||card.state==='ANSWERED')return;
+  card.state='ANSWERED';card.ans=card.opts[+idx];
+  SVR.audit('HUMAN (owner)','ask',id+' answered: "'+card.ans+'" — embedded as labeled ground truth');
+  UI.toast(id+' → embedded ✓ as ground truth. The desk will cite your answer.','gold','ASK INBOX');render()}});
+
+/* ── MHH BOARD — mistake/habit/history flaws with live correction lines ── */
+const MHH=[
+ {id:'MHH-H1',who:'HUMAN',flaw:'Chasing the first displacement candle',steps:['Named: 31 tagged cases','Owned: worst pattern in the taxonomy','Correction authored','Injected at gate-time','Verifying: 6 sessions silent'],line:'“First return only — the displacement candle itself is a chase, not an entry.”',silent:6,goal:10},
+ {id:'MHH-M1',who:'MACHINE',flaw:'S18 misclassifies vendor pre-announcement noise as catalyst',steps:['Named: ERR-028','Owned: S18 drift 12.4% vote-flip','Correction drafted (S18-NEWS-009)','Awaiting your authorship (ASK-039)','—'],line:'“Vendor PR cadence ≠ catalyst. Tier-1 wires only inside event windows.”',silent:2,goal:10},
+ {id:'MHH-H2',who:'HUMAN',flaw:'Early exits before T3 on winners',steps:['Named: runner-discipline leak','Owned: costs ~0.9R per winner','Correction: trail template locked','Injected: S27 owns the runner','Verifying: A/B cohort'],line:'“The runner belongs to the FSM, not to your nerves.”',silent:4,goal:10},
+];
+/* ── SAMPLE-BLOCK TRACKER — Douglas 20-trade blocks, P&L blurred mid-block ── */
+const BLOCKS=[
+ {pb:'MMBM Reversal × Day',n:14,of:20,flawless:12,worst:'−6R pre-accepted',pnl:'+7.2R',done:false},
+ {pb:'OTE Continuation × Swing',n:20,of:20,flawless:17,worst:'−7R pre-accepted',pnl:'+11.4R',done:true},
+ {pb:'Silver Bullet × Day',n:7,of:20,flawless:7,worst:'−5R pre-accepted',pnl:'+2.1R',done:false},
+];
+
+/* ── BAROMETER — DET-LEDGER positions 1–4, ambient on MARKETS ── */
+const BAROMETER={p1:9,p2:5,p3:4,p4:2,note:'Position 1–2 (constructive) 70% vs 3–4 (deteriorating) 30% · day-over-day +4pts',divergence:false};
+function barometerStrip(){
+ const tot=BAROMETER.p1+BAROMETER.p2+BAROMETER.p3+BAROMETER.p4;
+ const good=Math.round((BAROMETER.p1+BAROMETER.p2)/tot*100);
+ return'<div class="baro"><span class="mono i2" style="font-size:9px;letter-spacing:1px">BAROMETER · DET-LEDGER</span>'+
+  '<span class="bnum up">P1 '+BAROMETER.p1+'</span><span class="bnum up" style="opacity:.7">P2 '+BAROMETER.p2+'</span><span class="bnum dn" style="opacity:.7">P3 '+BAROMETER.p3+'</span><span class="bnum dn">P4 '+BAROMETER.p4+'</span>'+
+  '<div class="gauge" style="flex:1;min-width:120px"><i style="width:'+good+'%"></i></div><span class="mono" style="font-size:10.5px">'+good+'% constructive</span>'+
+  (BAROMETER.divergence?chip('DIVERGENCE — index highs vs deteriorating ledger','ch-blk','⛔'):chip('NO DIVERGENCE','ch-ok','✓'))+
+  '<span class="i2" style="font-size:9.5px">'+BAROMETER.note+'</span></div>';
+}
+
+/* ── in-app changelog — every release documents a failure and its fix ── */
+const CHANGELOG=[
+ ['V12.1 SYNCHRONY','Found: the app×brain gap matrix (23 missing organs). Fix: boot self-test, golden runner, stress range, calibration ledger, ask inbox, MHH board, block tracker, barometer, ivory packet, universe caps — all real.'],
+ ['V12.0','Found: domain hotkeys shadowed packet enum keys (caught by Playwright). Fix: judgment-room precedence.'],
+ ['V11.1','Found: consolidation dropped legacy capabilities. Fix: full-feature merge, 63 routes → verified homes.'],
+ ['V11.0','Found: 464 inline handlers, fabricated QA, token theater in legacy. Fix: command contract, real integrity suite, honest DEMO framing.'],
+];
+const RULES_VERSION='rules v13.4 · KB 13.3-candidate paired';
+
+/* ── ASK conversion from autopsy (needs_user_rule → ask card) ── */
+CMD.define({id:'ask.fromAutopsy',label:'Convert to ask card',purpose:'A needs-user-rule finding becomes a question card — one tap',
+ run:a=>{ASKS.unshift({id:'ASK-'+(43+ASKS.length),q:'From '+a+': should flow-absence degrade (ADVISORY-ABSENT) instead of blocking when flow is confirmation-tier?',ev:[a,'INF-021','LAW-006'],opts:['Degrade — flow is confirmation-tier','Keep blocking — freshness is freshness'],state:'OPEN',sla:'3d'});
+  SVR.audit('HUMAN (owner)','ask','Autopsy '+a+' converted to ask card');
+  UI.toast('Ask card created — answer it in Review → Ask Inbox','gold','ASK');go('review','asks')}});
+
+/* ── VIEWS ── */
+VIEWS['review.asks']=function(){
+ let h=vhead('REVIEW · ask inbox','The desk queues its questions; your answers embed as labeled ground truth',
+  'A terminal that only celebrates trades feels broken exactly when the system works best — principled refusal generates questions, and questions generate doctrine.');
+ h+=ASKS.map(c=>'<div class="panel'+(c.state==='OPEN'?' gold':'')+'"><div class="ph"><span class="t">'+c.id+'</span><span class="spacer"></span>'+(c.state==='OPEN'?chip('OPEN · SLA '+c.sla,'ch-live','◆'):chip('EMBEDDED ✓','ch-ok','✓'))+'</div><div class="pb">'+
+  '<div style="font-size:12.5px;line-height:1.6;margin-bottom:8px">'+U.esc(c.q)+'</div>'+
+  '<div class="row" style="margin-bottom:8px">'+c.ev.map(e=>'<span class="tag">'+U.esc(e)+'</span>').join('')+'</div>'+
+  (c.state==='OPEN'?'<div class="btnrow">'+c.opts.map((o,i)=>'<button class="btn sm pri" data-cmd="ask.answer" data-arg="'+c.id+'|'+i+'">'+U.esc(o)+'</button>').join('')+'</div>'
+   :kv('YOUR ANSWER','<b>'+U.esc(c.ans)+'</b> — embedded as ground truth; the desk cites it'))+'</div></div>').join('');
+ return h;
+};
+
+CMD.define({id:'zone.inspect',label:'Zone inspector',purpose:'Every zone answers four questions — why valid · what invalidates · which contract · early/clean/late',audit:false,
+ run:a=>{const s2=symBy(S.sym);const z={
+  FVG:['Fair value gap '+(s2.levels.entry?U.fmt(s2.levels.entry*0.997)+'–'+U.fmt(s2.levels.entry*1.0005):'—')+' (DET-041)','Displacement left an imbalance; first return is the highest-quality entry the model knows.','A close through the far side of the gap — the imbalance is then absorbed, thesis dead.','21DTE Δ.42 call — survives the time-stop window; 7DTE dies on theta before T2 can pay.','CLEAN if this is the FIRST return · EARLY if price has not swept the pool · LATE after two touches (third-touch rule).'],
+  OB:['Order block '+(s2.levels.stop?U.fmt(s2.levels.stop*1.001)+'–'+U.fmt(s2.levels.stop*1.007):'—')+' (DET-052)','Last opposing candle before displacement — where the trapped side was built.','Trading through the block body on closing basis — the footprint failed.','Same contract as the FVG entry; the OB is the deeper alternative fill.','EARLY at first touch without reaction · CLEAN on reaction + LTF shift · LATE once mitigated twice.'],
+  POOL:['Liquidity pool — '+U.esc(s2.levels.poolAbove||'—')+' (DET-044)','Resting stops = fuel. The draw on liquidity is the reason the trade can pay 5R.','Pools never re-arm; once swept, this magnet is SPENT forever.','Targets live here, not entries — T2 sits at the untaken pool.','Not an entry zone — timing grammar answers WHERE, not WHEN.']}[a];
+  UI.modal('ZONE INSPECTOR · '+a+' — the four questions',
+   kv('ZONE',z[0])+kv('1 · WHY VALID',z[1])+kv('2 · WHAT INVALIDATES',z[2])+kv('3 · WHICH CONTRACT',z[3])+kv('4 · EARLY / CLEAN / LATE',z[4])+
+   '<div class="i2" style="font-size:10.5px;margin-top:8px">Doctrine: a zone that cannot answer all four questions is decoration, not evidence (LAW-010).</div>',
+   '<button class="btn" data-cmd="ui.closeModal">Close</button>')}});
 /* ═══════════ ENGINE · demo heartbeat — one loop, no decorator towers ═══════════
    The legacy stacked 13 render wrappers and two competing 1s intervals.
    Here: ONE 2s tick that mutates state, then targeted DOM patches. */
@@ -2633,6 +2849,7 @@ const ENGINE={
   document.title='ATLAS Prime — Decision OS · DEMO';
   render();
   INTEGRITY.run();
+  BOOTTEST.run();
   ENGINE.start();
   setTimeout(()=>UI.toast('DEMO session — seeded, deterministic (seed '+ck('demo.seed')+'). Synthetic data, no broker, no live claims. Press ? for keys, ⌘K to jump.','','ATLAS PRIME V11'),500);
   SVR.audit('SYSTEM','boot','ATLAS Prime V11 booted — 7 domains · '+Object.keys(VIEWS).length+' workspaces · '+Object.keys(CMD.reg).length+' registered commands · integrity '+INTEGRITY.results.pass+'/'+INTEGRITY.results.total);

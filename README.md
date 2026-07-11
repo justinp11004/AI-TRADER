@@ -1,4 +1,4 @@
-# ATLAS Prime — Decision Operating System (V12 · ten-generation merge)
+# ATLAS Prime — Decision Operating System (V12.1 SYNCHRONY)
 
 **Open `index.html` in any browser. That's the app.** DEMO mode: seeded, deterministic, watermarked synthetic data — no broker, no live claims.
 
@@ -22,7 +22,7 @@ V11 is a ground-up rebuild: seven domains (ADR-001), a command contract so dead 
 
 ## Verification (this build, in a real browser)
 
-- 41/41 workspaces render · **0 console errors**
+- 42/42 workspaces render · **0 console errors** · boot self-test S1–S8: 8/8 · golden fixtures 5/5 · stress range 4/4
 - 12/12 integrity checks (enum canon, 5R gate blocks sub-5R, spread veto blocks OPT-007 breach, token single-use + hash-bound, R recomputed from levels, all commands wired)
 - Kill-switch halt/resume, packet decision → journal → token, stale-data drill → risk-engine denial, vision wall, replay scrubber, committee rail, autonomy-lab corpus, the teach loop (lesson → quiz-back → HUM chunk → court), the Copilot (⌘J), the Trade Builder verdict ladder, AI Memory rules, keyboard enum decisions, and the pocket-gate preview: all exercised end-to-end via Playwright
 
