@@ -1414,13 +1414,39 @@ VIEWS['markets.watch']=function(){
 VIEWS['markets.calendar']=function(){
   let h=vhead('MARKETS · event risk','Calendar & Events','Event blackouts are enforced, not advisory (LAW-017). '+prov('risk.event_window_hrs'));
   h+=panel('','',tbl(['When','Event','Class','Enforcement impact',''],EVENTS.map(e=>'<tr'+(e.block?' style="background:var(--warn-bg)"':'')+'><td class="mono">'+e.t+'</td><td><b>'+e.what+'</b></td><td>'+chip(e.cls,e.cls==='MACRO'?'ch-info':'ch-warn','◆')+'</td><td class="i1">'+U.esc(e.impact)+'</td><td>'+(e.block?chip('BLACKOUT ARMS','ch-blk','⛔'):chip('TRACKED','ch-mut','·'))+'</td></tr>').join('')),{flush:true});
+  h+='<div class="grid g2">';
+  h+=panel('EARNINGS DETAIL — implied vs history','S19 doctrine: the implied move is a price, not a forecast · <span class="demo-wm">demo</span>',
+    tbl(['Sym','Report','>IVR','>Implied ±','>8q realized','S19 read'],[
+     ['NVDA','T+21d AMC','41','±6.8%','5.1% avg','Implied rich vs history — sell-the-move structures viable AFTER the window, never through it'],
+     ['AMD','T+9d AMC','47','±7.4%','6.2% avg','14DTE contract crosses the event — DTE/event conflict flags at T+7d (LAW-016)'],
+     ['TSLA','deliveries T+6d','52','±8.2%','7.7% avg','IV-crush + event-risk window: no new swing exposure into the print; size down if held'],
+     ['COIN','T+16d AMC','77','±9.8%','8.9% avg','IVR 77 — premium rich; favor equity exposure over the option (OPT-014)'],
+    ].map(r=>'<tr><td class="mono"><b>'+r[0]+'</b></td><td class="mono" style="font-size:10.5px">'+r[1]+'</td><td class="r num">'+r[2]+'</td><td class="r num">'+r[3]+'</td><td class="r num i2">'+r[4]+'</td><td class="i1" style="font-size:10.5px">'+r[5]+'</td></tr>').join('')),{flush:true});
+  h+=panel('BLACKOUT ARITHMETIC — when the gate actually closes','the window is computed, not remembered '+prov('risk.event_window_hrs'),
+    kv('RULE','No new entries inside '+ck('risk.event_window_hrs')+'h of a binary event (LAW-017). The risk engine computes this — you never have to.')+
+    kv('CPI T+2d 08:30','Blackout arms T+1d 08:30 for index-correlated size — SPY spread must be flat or reduced-only by then')+
+    kv('NVDA T+21d','Swing eligible until T-1d 16:00 · packet TTLs inside the final week shorten automatically')+
+    kv('FOMC minutes 14:00','Not a blackout — a time-stop: scalps flat by 13:45, swings hold with stops honored')+
+    kv('WEEK AHEAD','Mon PMI · Wed FOMC minutes ✓today · Thu claims · Fri OPEX — pin risk rises into Friday close'));
+  h+='</div>';
   return h;
 };
 VIEWS['markets.alerts']=function(){
   let h=vhead('MARKETS · alert center','Alert Center','P0 interrupts life · P1 interrupts work · P2 waits ('+ck('alerts.p2_batch_min')+'m batch) · P3 is silent. If everything beeps, nothing is an alarm — a misclassified alert is itself a P2 defect.');
-  h+=panel('','',ALERTS.map(a=>'<div class="kv"'+(a.route?' style="cursor:pointer" data-cmd="nav.'+a.route+'"'+(a.arg?' data-arg="'+a.arg+'"':''):'')+'><span class="k">'+a.t+'</span><span class="v">'+chip(a.cls,a.cls==='P0'?'ch-blk':a.cls==='P1'?'ch-live':a.cls==='P2'?'ch-info':'ch-mut',a.cls==='P0'?'⛔':'●')+' '+U.esc(a.msg)+(a.ackd?' <span class="tag">ack</span>':'')+'</span></div>').join(''));
+  h+=panel('TAXONOMY — the alert contract','misclassified alerts are themselves P2 defects',
+    tbl(['Class','Meaning','Delivery','Repeat rule'],[
+     ['P0','Capital or safety, NOW — kill trip · broker reject · past invalidation · token misuse','Pages + takeover · breaks quiet hours','Repeats until acknowledged'],
+     ['P1','Decision needed / integrity — packet awaiting, TTL closing, blocked upstream','Once + persistent badge','Re-fires at TTL-5:00'],
+     ['P2','Awareness — brief ready, setup armed, drill results','Batched every '+ck('alerts.p2_batch_min')+'m '+prov('alerts.p2_batch_min'),'Never repeats'],
+     ['P3','Record — telemetry, cycle stats','Ledger only, silent','—'],
+    ].map(r=>'<tr><td>'+chip(r[0],r[0]==='P0'?'ch-blk':r[0]==='P1'?'ch-live':r[0]==='P2'?'ch-info':'ch-mut',r[0]==='P0'?'⛔':'●')+'</td><td class="i1" style="font-size:11px">'+r[1]+'</td><td class="i2" style="font-size:10.5px">'+r[2]+'</td><td class="i2" style="font-size:10.5px">'+r[3]+'</td></tr>').join('')),{flush:true});
+  h+=panel('INBOX — every alert with its reading','an alert without an interpretation is noise',
+    ALERTS.map((a,i)=>'<div class="kv"><span class="k">'+a.t+'</span><span class="v">'+chip(a.cls,a.cls==='P0'?'ch-blk':a.cls==='P1'?'ch-live':a.cls==='P2'?'ch-info':'ch-mut',a.cls==='P0'?'⛔':'●')+' '+U.esc(a.msg)+
+      '<div class="i2" style="font-size:10px;margin-top:2px">ATLAS · '+(a.cls==='P1'?'act inside the TTL or the evidence archives itself':a.cls==='P0'?'this interrupted you on purpose — resolve before anything else':a.cls==='P2'?'awareness only — nothing is asked of you':'recorded for reconstruction')+'</div>'+
+      '<span class="btnrow" style="margin-top:4px">'+(a.route?'<button class="btn sm pri" data-cmd="nav.'+a.route+'"'+(a.arg?' data-arg="'+a.arg+'"':'')+'>Open</button>':'')+(a.ackd?'<span class="tag">acknowledged</span>':'<button class="btn sm" data-cmd="alert.ack" data-arg="'+i+'">Acknowledge</button>')+'</span></span></div>').join(''));
   return h;
 };
+CMD.define({id:'alert.ack',label:'Acknowledge alert',purpose:'Mark handled — P0s stop repeating only through this',run:a=>{const al=ALERTS[+a];if(al){al.ackd=true;SVR.audit('HUMAN (owner)','alert','Acknowledged: '+al.msg.slice(0,60));render()}}});
 /* ═══════════ RESEARCH · one symbol, every angle, synchronized ═══════════ */
 function symSwitcher(){
   return'<span class="seg">'+SYMS.map(s=>'<button class="'+(S.sym===s.sym?'on':'')+'" data-cmd="research.sym" data-arg="'+s.sym+'">'+s.sym+'</button>').join('')+'</span>';
@@ -1474,6 +1500,22 @@ VIEWS['research.structure']=function(){
     (s.levels.stop?kv('STRUCTURAL STOP','<span class="mono" style="color:var(--blk)">'+U.fmt(s.levels.stop)+'</span> — placed by structure, never by 5R arithmetic. Tightening a stop to manufacture 5R is forbidden by LAW-004.'):kv('STATUS','No trade plan — context symbol'))+
     kv('DISPROOF','5m close back inside the swept range kills the reversal thesis — see packet §2.'));
   h+='</div>';
+  h+='<div class="grid g2">';
+  h+=panel('POOL STATE MACHINES','pools never re-arm — sweeps are spent forever (DET-044)',
+    tbl(['Pool','State','Consequence'],[
+     ['Asia low 194.30','<span class="dn">SWEPT 10:14</span>','SPENT — this magnet no longer exists; the trapped shorts it created still do'],
+     ['PDH 199.20','<span class="up">ARMED</span>','First draw — T1 lives just above it'],
+     ['Equal highs 203.30','<span class="up">ARMED</span>','2+ touches within 0.15×ATR (HUM-118 rule) — qualified pool'],
+     ['210 measured-move','<span class="up">ARMED</span>','Terminal draw — the 5R level is priced against it'],
+    ].map(r=>'<tr><td class="mono" style="font-size:11px">'+r[0]+'</td><td class="mono" style="font-size:10.5px">'+r[1]+'</td><td class="i1" style="font-size:10.5px">'+r[2]+'</td></tr>').join('')),{flush:true});
+  h+=panel('DEALING RANGE — the arithmetic','premium sells, discount buys, equilibrium waits',
+    (function(){const lo=s.levels.stop?s.levels.stop*0.995:s.px*0.95,hi2=s.levels.t2||s.px*1.05,eq=(lo+hi2)/2;
+     const ote1=hi2-(hi2-lo)*0.62,ote2=hi2-(hi2-lo)*0.79,ote705=hi2-(hi2-lo)*0.705;
+     return kv('RANGE','<span class="mono">'+U.fmt(lo)+' → '+U.fmt(hi2)+'</span> (protected low zone → terminal draw)')+
+      kv('EQUILIBRIUM','<span class="mono">'+U.fmt(eq)+'</span> — above = premium (sell side), below = discount (buy side)')+
+      kv('OTE BAND','<span class="mono">'+U.fmt(ote2)+' – '+U.fmt(ote1)+'</span> (62–79% retracement) · A+ tag at 70.5% = <span class="mono">'+U.fmt(ote705)+'</span>')+
+      kv('PRICE NOW','<span class="mono">'+U.fmt(s.px)+'</span> — '+(s.px<eq?'<span class="up">DISCOUNT — longs are buying value</span>':'<span style="color:var(--warn)">PREMIUM — longs are paying up</span>'))})());
+  h+='</div>';
   h+=panel('SMC / ICT EVIDENCE CHECKLIST','a named pattern must have behavior behind it (LAW-010)',
     tbl(['Element','State','Detail'],[['Liquidity sweep','✓','Asia low 194.30 taken 10:14 with high effort'],['Displacement','✓ 74/100','body ≥ '+ck('detect.displacement_body')+'× · vol ≥ '+ck('detect.displacement_vol')+'× '+prov('detect.displacement_body')],['FVG','✓','195.90–196.30 · first return only'],['Order block','✓','195.40 · fresh, unmitigated'],['OTE','✓','62–79% overlap'],['Killzone','✓','NY-AM (TIM-003)'],['SMT divergence','n/a','not required for model 2']].map(r=>'<tr><td>'+r[0]+'</td><td class="mono up">'+r[1]+'</td><td class="i1" style="font-size:11px">'+r[2]+'</td></tr>').join('')),{flush:true});
   return h;
@@ -1483,6 +1525,20 @@ VIEWS['research.wyckoff']=function(){
   h+='<div class="grid g2">';
   h+=panel('CAMPAIGN READ — S10','phase and events',
     kv('SCHEMATIC','Re-accumulation (4H)')+kv('SPRING','10:14 — the engineered sweep IS the spring')+kv('TEST','10:24 · lower volume ✓')+kv('LPS','forming above 196.30')+kv('PHASE','D — advance within the range')+kv('DOCTRINE','Schematic elements present; nothing forced.'));
+  h+='<div class="grid g2">';
+  h+=panel('VOLUME BY PHASE — the tape grades the schematic','effort must agree with the phase, or the schematic is being forced',
+    tbl(['Phase event','Volume law','This campaign'],[
+     ['Spring (10:14)','HIGH effort, closes strong','✓ RVOL 2.3, closed top-quarter — result confirmed'],
+     ['Test (10:24)','LOW volume — supply exhausted','✓ 0.6× the spring bar — textbook'],
+     ['LPS (forming)','Diminishing pullback volume','✓ so far — each dip lighter'],
+     ['SOS (next)','Expansion + spread widening','PENDING — this is what T1 acceptance looks like'],
+    ].map(r=>'<tr><td class="mono" style="font-size:11px">'+r[0]+'</td><td class="i2" style="font-size:10.5px">'+r[1]+'</td><td class="i1" style="font-size:10.5px">'+r[2]+'</td></tr>').join('')),{flush:true});
+  h+=panel('CAUSE & EFFECT — the P&F count','Wyckoff’s law: the size of the cause bounds the effect',
+    kv('CAUSE BUILT','9 columns across the re-accumulation range')+
+    kv('MEASURED TARGET','≈ 210 — and it lands ON the untaken measured-move pool: two independent methods, one level, which is why T2 is credible')+
+    kv('DISTRIBUTION MIRROR','If this were distribution the grammar would read PSY→BC→AR→ST→UT→UTAD→SOW→LPSY — the UTAD (failed high on light volume) is the tell that is ABSENT here')+
+    kv('DOCTRINE','Never force a schematic onto equilibrium — if neither grammar fits, the answer is no campaign, and no campaign means WATCH_ONLY'));
+  h+='</div>';
   h+=panel('CAMPAIGN PROGRESSION','the schematic as a living sequence — glowing chip = where price is now',
     '<div class="row" style="gap:4px">'+['PS','SC','AR','ST','SPRING','TEST','SOS','LPS','BOS'].map((ev,i)=>'<span class="lc'+(ev==='TEST'?' lc-TRIGGERED':'')+'" style="'+(i<6?'':'opacity:.45')+'">'+ev+'</span>'+(i<8?'<span class="i2" style="font-size:9px">→</span>':'')).join('')+'</div>'+
     '<div class="i2" style="font-size:10.5px;margin-top:8px">Accumulation grammar: PS→SC→AR→ST→Spring→Test→SOS→LPS. Distribution mirrors it (PSY→BC→AR→ST→UT→UTAD→SOW→LPSY). Cause built (P&F): 9 columns → measured target 210. Kill phrase: no invalidation = no trade.</div>');
@@ -1549,6 +1605,19 @@ VIEWS['research.catalysts']=function(){
     kv('EARNINGS','T-21d — outside '+ck('risk.event_window_hrs')+'h window · swing eligible '+prov('risk.event_window_hrs'))+
     kv('MACRO','FOMC minutes today 14:00 — index vol event; scalp time-stop 13:45')+
     kv('LITIGATION','None pending'));
+  h+=panel('CATALYST TIMELINE — scored, not just listed','each headline carries a 0–100 catalyst score and a trade-impact read · <span class="demo-wm">demo</span>',
+    [['T-0 09:12','Semis complex upgraded at two desks','72','Reinforces leadership — but wait for structure, not the headline'],
+     ['T-0 08:30','CPI printed cooler than consensus','94','Regime agent flips breadth weight up — risk-on rotation confirmed'],
+     ['T-1d','GTC keynote scheduled T+12d','61','Narrative fuel; NOT tradeable until it becomes structure'],
+     ['T-3d','Insider cluster: net-neutral 90d filing sweep','38','No distribution signature — clears the S17 lane']]
+    .map(r=>'<div class="kv"><span class="k">'+r[0]+'</span><span class="v"><b style="font-size:11.5px">'+r[1]+'</b> <span class="tag">score '+r[2]+'</span><div class="i2" style="font-size:10.5px;margin-top:2px">'+r[3]+'</div></span></div>').join(''));
+  h+=panel('THE FOUR EARNINGS ARCHETYPES — S19 classifier','which movie is this ticker in?',
+    tbl(['Archetype','Signature','Playbook response'],[
+     ['Beat-and-raise leader','Gaps up, holds VWAP, closes strong','Continuation entries on first structural pullback — never chase the gap'],
+     ['Beat-and-fade','Gaps up into overhead supply, closes red','The trap archetype — the gap IS the liquidity event'],
+     ['Kitchen-sink reset','Gaps down, reverses on volume','Watch for the spring — capitulation builds the cause'],
+     ['Drift-into-print','IV inflates, price pins','No position through the print, ever (LAW-017) — trade the crush after'],
+    ].map(r=>'<tr><td><b style="font-size:11px">'+r[0]+'</b></td><td class="i1" style="font-size:10.5px">'+r[1]+'</td><td class="i2" style="font-size:10.5px">'+r[2]+'</td></tr>').join('')),{flush:true});
   h+=panel('FORENSIC & OWNERSHIP — S17 / S20','slow truth under fast price',
     kv('ACCRUALS','Clean — no red flags')+kv('DILUTION','No overhang')+kv('INSIDERS','Net-neutral 90d')+kv('SOCIAL HEAT','92nd percentile — S21 advisory: crowded-trade context, tertiary by CC-13'));
   h+='</div>';
@@ -1558,7 +1627,15 @@ VIEWS['research.history']=function(){
   const s=symBy(S.sym);
   const rows=JOURNAL.filter(j=>j.sym===s.sym);
   let h=rHead('ATLAS decision history','Every prior decision on this symbol — taken AND rejected (LAW-018)');
-  h+=panel('','',rows.length?tbl(['When','Ref','Kind','Decision','>Outcome','Lesson'],rows.map(j=>'<tr><td class="mono">'+j.t+'</td><td class="mono">'+j.id+'</td><td>'+chip(j.kind,j.kind==='REJECTED'?'ch-neg':'ch-ok','·')+'</td><td class="i1" style="font-size:11px">'+U.esc(j.what)+'</td><td class="r num">'+U.esc(j.outcome)+'</td><td class="i2" style="font-size:10.5px">'+U.esc(j.lesson)+'</td></tr>').join('')):'<div class="empty"><div class="e1">NO PRIOR DECISIONS</div>This symbol has not reached the decision stage before.</div>',{flush:true});
+  h+='<div class="grid g4">'+
+    stat('Decisions on '+s.sym,rows.length,'taken + rejected, all journaled (LAW-018)')+
+    stat('Correct rejections',rows.filter(j=>j.kind==='REJECTED'&&j.outcome.includes('✓')).length+' of '+rows.filter(j=>j.kind==='REJECTED').length,'process-graded at decision time')+
+    stat('Shadow entries',ARCHIVE.filter(a=>a[1]===s.sym).length,'counterfactual-tracked passes')+
+    stat('Open packet',PACKETS.some(p=>p.sym===s.sym&&p.state==='READY_FOR_HUMAN')?'YES':'none','see Decisions queue')+'</div>';
+  h+=panel('DECISION RECORD','',rows.length?tbl(['When','Ref','Kind','Decision','>Outcome','Lesson'],rows.map(j=>'<tr><td class="mono">'+j.t+'</td><td class="mono">'+j.id+'</td><td>'+chip(j.kind,j.kind==='REJECTED'?'ch-neg':'ch-ok','·')+'</td><td class="i1" style="font-size:11px">'+U.esc(j.what)+'</td><td class="r num">'+U.esc(j.outcome)+'</td><td class="i2" style="font-size:10.5px">'+U.esc(j.lesson)+'</td></tr>').join('')):'<div class="empty"><div class="e1">NO PRIOR DECISIONS</div>This symbol has not reached the decision stage before.</div>',{flush:true});
+  const shadows=ARCHIVE.filter(a=>a[1]===s.sym);
+  if(shadows.length)h+=panel('SHADOW ARCHIVE — '+s.sym,'what the desk analyzed and did NOT take, tracked to its counterfactual',
+    tbl(['ID','Decision','>Counterfactual','Playbook','Note'],shadows.map(a=>'<tr><td class="mono">'+a[0]+'</td><td>'+chip(a[2],a[2].startsWith('TAKEN')?'ch-ok':a[2]==='REJECTED'?'ch-neg':'ch-mut','·')+'</td><td class="r num">'+a[3]+'</td><td class="i1" style="font-size:10.5px">'+a[4]+'</td><td class="i2" style="font-size:10.5px">'+a[5]+'</td></tr>').join('')),{flush:true});
   return h;
 };
 /* ═══════════ DECISIONS · evidence → governed decision ═══════════ */
@@ -1608,7 +1685,8 @@ VIEWS['decisions.packet']=function(arg){
   if(p.secs){
     h+='<div class="ivory"><h3>VERIFICATION PACKET '+p.id+' — THE DOCUMENT A HUMAN SIGNS</h3>'+
       '<div style="font-size:10.5px;color:#6B5F3E;margin-bottom:8px">The only light surface in this terminal, deliberately: LAW-007 says a human signs a <i>document</i>, not a widget. 19 sections, complete or nothing.</div>'+
-      p.secs.map((s2,i)=>'<details class="isec"'+(i<2?' open':'')+'><summary>§'+(i+1)+' · '+U.esc(s2[0]).toUpperCase()+'</summary><div>'+U.esc(s2[1])+'</div></details>').join('')+
+      '<div class="btnrow" style="margin-bottom:8px"><button class="btn sm" data-cmd="pkt.expand" data-arg="open" style="background:#E5DEC9;border-color:#C9BFA5;color:#403820">Expand all 19</button><button class="btn sm" data-cmd="pkt.expand" data-arg="close" style="background:#E5DEC9;border-color:#C9BFA5;color:#403820">Collapse all</button></div>'+
+      p.secs.map((s2,i)=>'<details class="isec" open><summary>§'+(i+1)+' · '+U.esc(s2[0]).toUpperCase()+'</summary><div>'+U.esc(s2[1])+'</div></details>').join('')+
       '<div class="sigline"><span>OPERATOR SIGNATURE — a canonical decision enum below constitutes signature <span class="goldseal">◆ LAW-007</span></span><span class="mono">'+p.planHash+' · assembled '+p.assembled+'</span></div></div>';
   }else{
     h+='<div class="banner blk"><span class="bico">⛔</span><div><b>'+p.sections+'/'+ck('packet.sections_required')+' sections.</b> Incomplete packet — full section render withheld. MISSING: '+p.missing.map(U.esc).join(' · ')+'. No clean packet, no trade.</div></div>';
@@ -1667,6 +1745,8 @@ CMD.define({id:'pkt.decide',label:'Decide packet',purpose:'Apply a canonical dec
       UI.toast(p.id+' → '+d+' · token '+t.id+' ('+ck('token.ttl_sec')+'s, single-use) · paper order routed through the same gate as live','paper','DECISION');
     }else{UI.toast(p.id+' → '+d+' · journaled','ok','DECISION')}
     render()}});
+CMD.define({id:'pkt.expand',label:'Expand/collapse packet',purpose:'Open or close all 19 sections of the ivory document at once',audit:false,
+  run:a=>{document.querySelectorAll('.ivory details').forEach(d=>d.open=(a==='open'))}});
 CMD.define({id:'pkt.pocket',label:'Pocket gate preview',purpose:'How this packet reaches your phone — same enums, same laws, smaller screen',audit:false,
   run:a=>{const p=pktBy(a);if(!p)return;
     UI.modal('📱 ATLAS GATE BOT — pocket preview',
@@ -1707,7 +1787,24 @@ VIEWS['decisions.riskproof']=function(){
 VIEWS['decisions.history']=function(){
   let h=vhead('DECISIONS · history','Approvals, rejections, expiries — the full record',
     'Process quality is graded at decision time, not in hindsight. Rejections carry equal weight in the record.');
-  h+=panel('','',tbl(['When','Ref','Sym','Kind','Decision / event','>Outcome','Process lesson'],
+  h+='<div class="grid g4">'+
+    stat('Median decision latency','3m 40s','packet-ready → enum · target < TTL/3')+
+    stat('Rejection share','93%','of promoted ideas — selectivity IS the product')+
+    stat('Approvals honored at tier','100%','no paper approval has leaked toward live')+
+    stat('Expired unjudged','1 this week','AUT-115 — auto-reopen fix in court')+'</div>';
+  h+=panel('ENUM USAGE — how you actually decide','canonical enums only (LAW-014); the distribution is itself a discipline metric',
+    tbl(['Decision enum','>Uses (30d)','Note'],[
+     ['APPROVE_PAPER_ONLY','11','the workhorse — paper tier is the pressure valve'],
+     ['WAIT_FOR_TRIGGER','9','patience, journaled'],
+     ['REJECT_BAD_TRADE','14','the most-used reject — chasing filter earns its keep'],
+     ['REJECT_BAD_CONTRACT','6','LAW-009 in practice'],
+     ['REJECT_NEEDS_MORE_DATA','4','freshness discipline (one became AUT-118)'],
+     ['MODIFY_LEVELS','3','each spawned a packet revision'],
+     ['LOG_AND_REVIEW','2','archived as teaching examples'],
+     ['APPROVE_REDUCED_SIZE','2','marginal-edge tier'],
+     ['APPROVE_LIVE','0','DEMO — structurally unavailable, honestly'],
+    ].map(r=>'<tr><td class="mono" style="font-size:10.5px">'+r[0]+'</td><td class="r num">'+r[1]+'</td><td class="i2" style="font-size:10.5px">'+r[2]+'</td></tr>').join('')),{flush:true});
+  h+=panel('FULL RECORD','',tbl(['When','Ref','Sym','Kind','Decision / event','>Outcome','Process lesson'],
     JOURNAL.map(j=>'<tr><td class="mono">'+j.t+'</td><td class="mono">'+j.id+'</td><td class="mono"><b>'+j.sym+'</b></td><td>'+chip(j.kind,j.kind==='REJECTED'?'ch-neg':j.kind==='CLOSED'?'ch-mut':'ch-ok','·')+'</td><td class="i1" style="font-size:11px">'+U.esc(j.what)+'</td><td class="r num">'+U.esc(j.outcome)+'</td><td class="i2" style="font-size:10.5px">'+U.esc(j.lesson)+'</td></tr>').join('')),{flush:true});
   return h;
 };
@@ -1762,6 +1859,19 @@ VIEWS['portfolio.orders']=function(){
     'Paper fill model v2.1: bid/ask spread, quote age, queue assumptions, partials, slippage — no fantasy fills. Every fill logs slippage vs plan.');
   h+=panel('','',tbl(['Time','ID','Sym','Side','Order','State','Fill detail','Link'],
     ORDERS.map(o=>'<tr><td class="mono">'+o.t+'</td><td class="mono">'+o.id+'</td><td class="mono"><b>'+o.sym+'</b></td><td class="mono">'+o.side+'</td><td class="i1" style="font-size:11px">'+U.esc(o.what)+'</td><td>'+lc(o.state)+'</td><td class="i2" style="font-size:10.5px">'+U.esc(o.fill)+'</td><td class="mono" style="font-size:10px">'+o.link+'</td></tr>').join('')),{flush:true});
+  h+='<div class="grid g2">';
+  h+=panel('FILL QUALITY — the fill model graded against itself','slippage is a measured cost, never a surprise',
+    kv('AVG SLIPPAGE','$4.20/fill (1.1 bps) — inside the 3 bps program gate')+
+    kv('TIME-TO-FILL','median 2.4s · p95 6.2s — resting limits, never chased')+
+    kv('CHASE DECLINES','1 this week (ORD-3327) — the limit-discipline rule refusing to pay up')+
+    kv('PARTIALS','0 — position sizes sit inside top-of-book depth by design')+
+    kv('MODEL VERSION','fill model v2.1 — spread + quote-age + queue-position aware; version shown on every result'));
+  h+=panel('ORDER STATE MACHINE','every order is somewhere in this FSM — UNKNOWN is a first-class state, not a bug',
+    '<div class="row" style="margin-bottom:8px">'+['ORDER_SUBMITTED','WORKING','PARTIAL_FILL','FILLED','CANCELED','REJECTED_BY_BROKER','UNKNOWN'].map(st=>lc(st)).join('<span class="i2" style="font-size:9px">→</span>')+'</div>'+
+    kv('UNKNOWN','API timeout after acceptance → reconcile against broker truth; NEVER auto-resend — duplicate orders are the classic account-killer')+
+    kv('RECONCILE LOOP','Paper broker reconciled every 0.9s; any mismatch locks new orders and pages P1 (RB-03)')+
+    kv('HALT BEHAVIOR','Kill switch blocks NEW risk; reduce-only close orders stay available when spreads are sane'));
+  h+='</div>';
   h+='<div class="banner info"><span class="bico">i</span><div><b>Order safety doctrine:</b> idempotency key on every intent · unknown-state recovery without duplicate resend · broker reconciliation loop · options are limit-only. Live adapter: NOT CONFIGURED (disabled until Phase 8 gates pass — this is a feature, not a gap).</div></div>';
   return h;
 };
@@ -2121,6 +2231,19 @@ VIEWS['system.permissions']=function(){
   h+=panel('MODE LADDER','mutually exclusive; reload never silently raises authority',
     ENUMS.MODES.map(m=>kv(m,m==='DEMO'?'<b>ACTIVE</b> — synthetic data, watermarked, no broker, no claims':m==='REPLAY'?'historical point-in-time, deterministic seed, replay clock visible':m==='PAPER'?'real data + simulated fills; full risk & packet workflow applies':m==='LIVE_REVIEW'?'real data + account; ATLAS analyzes and proposes; cannot send an order':'every order needs a fresh server token + pre-send revalidation')).join('')+
     '<div class="btnrow" style="margin-top:9px"><button class="btn sm" disabled data-blocked="Mode transitions are server-gated with step-up auth.\nIn DEMO there is no server — transition honestly unavailable.">Request mode change</button></div>');
+  h+=panel('STEP-UP AUTHENTICATION — how authority increases','reloading the browser can never silently raise authority',
+    [['1','Request','Operator asks for a mode transition upward (e.g. PAPER → LIVE_REVIEW)'],
+     ['2','Identity','Fresh MFA challenge — the standing session is NOT enough for more authority'],
+     ['3','Server verdict','RBAC check + promotion-ladder gates evaluated server-side; UI merely displays the answer'],
+     ['4','Audit + rollback','Transition journaled with identity/surface/reason; safe rollback path recorded BEFORE the switch'],
+     ['5','Expiry','Elevated authority decays on timeout — quiet de-escalation, loud escalation']]
+    .map(r=>kv('STEP '+r[0]+' · '+r[1],'<span style="font-size:11px">'+r[2]+'</span>')).join(''));
+  h+=panel('SESSIONS & DEVICES','who is holding authority right now · <span class="demo-wm">demo</span>',
+    tbl(['Session','Surface','Role','Since','State'],[
+     ['this one','Desktop terminal','Owner','10:02 ET','<span class="up">ACTIVE · full desk authority (demo tier)</span>'],
+     ['pocket-gate','Telegram (preview)','Owner · reduced surface','—','<span class="i2">NOT PAIRED — enums-only when live</span>'],
+     ['—','PWA','—','—','<span class="i2">replaces Telegram only at reliability parity</span>'],
+    ].map(r=>'<tr><td class="mono" style="font-size:10.5px">'+r[0]+'</td><td>'+r[1]+'</td><td class="i1" style="font-size:11px">'+r[2]+'</td><td class="mono" style="font-size:10.5px">'+r[3]+'</td><td class="mono" style="font-size:10.5px">'+r[4]+'</td></tr>').join('')),{flush:true});
   h+=panel('MOBILE DOCTRINE','the pocket gate does less, on purpose',
     kv('ON MOBILE','packet cards · approve/reject (same enums, LAW-014) · kill switch (hold-to-arm preserved) · P0/P1 alerts · EOD digest')+
     kv('NEVER ON MOBILE','config edits · learning approvals — governance is a desk activity')+
