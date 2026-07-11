@@ -1,6 +1,6 @@
 # Feature preservation map — every legacy capability and where it lives now
 
-Directive honored: **merge and unify all features; remove none.** All 63 legacy routes (V6–V10) map below.
+Directive honored: **merge and unify all features; remove none.** All 63 legacy routes (V6–V10) **plus the four early prototypes (GEN0–GEN3)** map below.
 Unlike the legacy "P9 preservation registry" (which passed by checking that a function existed in the same file), every claim here is browser-verified: 38 workspaces click-tested, 0 console errors.
 
 | Legacy route(s) | Capability | V11.1 home |
@@ -39,3 +39,27 @@ Unlike the legacy "P9 preservation registry" (which passed by checking that a fu
 | S4 · P9 · E8 | Contract matrix / feature registry / tab spec matrix | This document + the command registry itself (every control is a typed contract) |
 | E9 | 200-scenario validation | **SYSTEM → Integrity Checks** — real assertions replacing the fabricated suite |
 | S6 · E5 · E6 · E7 · P8 | Readiness / upgrade program / safety / launch / capacity-cost | `docs/READINESS.md` + capacity & unit economics in **SYSTEM → Health** |
+
+## Early prototypes (GEN0 Enterprise OS · GEN1/GEN2 Quant Terminal · GEN3 Command OS ancestor)
+
+| Prototype feature | V12 home |
+|---|---|
+| AI Copilot — "a disciplined quant analyst that will tell you NO TRADE" (⌘J, drawer chat) | Top bar **◈ Copilot** + ⌘J, everywhere |
+| Trade Builder — manual plan, 12 confluence chips, verdict ladder REJECTED→WATCH_ONLY→APPROVED_REDUCED_SIZE→APPROVED | **DECISIONS → Trade Builder** (runs the same SVR risk engine as packets) |
+| Editable AI Memory — lockable operator rules, CRITICAL flags, learning-queue promotions | **REVIEW → AI Memory** |
+| Onboarding "discipline contract" (5R minimum · structural stops · no-trade is a position · kill switch armed) | Command banner + ⌘K "Discipline contract" |
+| Manager Inbox + Conflict Resolution Board + Automation Schedules | **SYSTEM → Manager Inbox** |
+| Sector rotation quilt + market internals (TRIN, ADV/DEC, up/down vol, highs/lows, regime score) | **MARKETS → Regime** |
+| Behavioral risk guards (revenge-trade, post-11:00 overtrading, 2-red cooldown, PDT counter) + kill-switch auto-engage conditions + portfolio Greeks | **PORTFOLIO → Risk Cockpit** |
+| P&L calendar heatmap + mistake taxonomy + rule-follow% + pattern detection | **REVIEW → Journal** |
+| Key statistics (short interest, beta, ATR, dark-pool ratio) + intel grade + analyst/ownership + S/R liquidity ladder | **RESEARCH → Overview** |
+| Whale/net-premium flow stats + suspicious-flow discounting | **RESEARCH → Flow** |
+| Wyckoff campaign event-chip progression (PS→SC→AR→ST→Spring→Test→SOS→LPS) + P&F cause target | **RESEARCH → Wyckoff & Volume** |
+| Keyboard 1–9 = decision enums (judgment room is keyboard-first) | **DECISIONS → Packet Detail** |
+| "Rejection reasons considered" — the desk argues against itself | **DECISIONS → Packet Detail** |
+| Telegram pocket-gate preview + never-on-mobile doctrine | **DECISIONS → Packet Detail** + Permissions |
+| Session-phase expectancy (lunch −0.21R → throttle proposal) + grade-monotonicity test | **REVIEW → Performance** |
+| Strategy promotion pipeline FSM (SIM→PAPER→PARITY→LIVE-min→SCALE) | **REVIEW → Replay & Backtest** |
+| Per-seat forward plans ("the mesh always knows its next move") + reasoning streams | **SYSTEM → Agent Council** (deep-dive) |
+| Session progress bar · evidence vault · go-live QA gates · alert doctrine ("P0 interrupts life") | Top bar · Knowledge Base · Integrity · Alert Center |
+| Promotion economics ($30/day promoted vs $3k/day naive) | **MARKETS → Scanner** |
