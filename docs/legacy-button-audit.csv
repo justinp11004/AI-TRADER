@@ -1,0 +1,18 @@
+route,control,status,why
+GLOBAL,all 464 inline onclick handlers,DEFECT,inline handlers forbidden by rebuild spec; replaced by data-cmd command registry with preconditions
+C1/C8/Q15,Telegram preview reply chips (6),COSMETIC,rendered as spans with no handlers
+C2,section 18/19 feedback buttons (9),COSMETIC,no onclick; feedback never captured
+C2,MODIFY_LEVELS "Request v2",COSMETIC,reads inputs then discards them; ledger+toast only
+C7,"Diff v13.1<->v13.2",COSMETIC,toast only
+C7,Rollback "Draft rollback",COSMETIC,ledger+toast; config untouched
+C8,session-phase overrides (5),COSMETIC,ledger+toast; clock never changes
+C8,universe promote buttons (8),COSMETIC,toast only
+C9,"Export JSON + PDF",COSMETIC,no file produced despite export claim
+M4,"Rotate" key buttons (9),COSMETIC,toast only
+M7/V3,"Probe retrieval" (2),COSMETIC,canned toast with fake latency numbers
+P2,"Force T1 refresh" / "Freeze promotions",COSMETIC,toast only
+P3,"Replay failed events" / "Test failover",COSMETIC,toast only
+P8,"Set daily spend cap" / "Model 10k" / "Model 25k",COSMETIC,toast only
+E4,"Decision DAG" button,DEFECT,mislabeled - navigates to S3 Data Spine instead of S2
+E9,"Run 200 scenarios",DECEPTIVE,passes by checking the length of its own spec arrays; exports CI-looking JSON
+V11-POLICY,every control,CONTRACT,registered command with preconditions; unavailable controls render disabled WITH the reason; zero cosmetic buttons

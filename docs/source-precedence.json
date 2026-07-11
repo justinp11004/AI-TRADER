@@ -1,0 +1,19 @@
+{
+  "version": 1,
+  "precedence": [
+    {"rank": 1, "source": "constitution", "detail": "18 prime laws; LAW-004, LAW-007, GOV-024 locked"},
+    {"rank": 2, "source": "runtime_config", "detail": "atlas_config numeric truth; prose never overrides (LAW-015)"},
+    {"rank": 3, "source": "canonical_schemas", "detail": "packet / vote / enums / order / position contracts"},
+    {"rank": 4, "source": "agents_and_playbooks", "detail": "34-seat hierarchy, veto surface, playbook FSMs"},
+    {"rank": 5, "source": "operating_doctrine", "detail": "current core doctrine extracted from V7-V10 canon"},
+    {"rank": 6, "source": "build_spec", "detail": "production rebuild spec and ADRs in docs/"},
+    {"rank": 7, "source": "legacy_html", "detail": "legacy/reference/* — visual and interaction reference ONLY"},
+    {"rank": 8, "source": "legacy_lineage", "detail": "older layers and snapshots — research only"}
+  ],
+  "rules": [
+    "frontend_never_overrides_backend",
+    "profitability_never_overrides_safety",
+    "config_beats_prose",
+    "legacy_cannot_override_current"
+  ]
+}
