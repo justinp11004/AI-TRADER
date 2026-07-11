@@ -1,4 +1,4 @@
-# ATLAS Prime — Decision Operating System (V12.1 SYNCHRONY)
+# ATLAS Prime — Decision Operating System (V12.2 SYNCHRONY · complete estate)
 
 **Open `index.html` in any browser. That's the app.** DEMO mode: seeded, deterministic, watermarked synthetic data — no broker, no live claims.
 

@@ -1313,6 +1313,12 @@ VIEWS['command.cockpit']=function(){
     stat('Open risk',U.fmt(S.openRiskR,2)+'R <span class="i2" style="font-size:11px">/ '+ck('risk.max_open_risk_R')+'R</span>','headroom '+U.fmt(ck('risk.max_open_risk_R')-S.openRiskR,2)+'R '+prov('risk.max_open_risk_R'))+
     stat('Day P&L · paper','<span class="'+(S.dayPnl>=0?'up':'dn')+'">'+U.money(S.dayPnl)+'</span>','breaker '+U.fmt(S.dayLossUsedR,1)+'R of '+ck('risk.max_day_loss_R')+'R used '+prov('risk.max_day_loss_R'))+
   '</div>';
+  h+=panel('EXECUTIVE BRIEF — the four things (E4 doctrine)','best setup · hidden risk · most important rejection · next human action',
+    '<div class="grid g4">'+
+    stat('Best setup','NVDA MMBM','packet live · grade A- · 5.00R @ T2')+
+    stat('Highest hidden risk','Semis correlation','NVDA open + AMD pending = ONE bet at 0.84 (RISK-041)')+
+    stat('Most important rejection','TSLA short','4.2R < 5R — the floor held. Shadow-tracked.')+
+    stat('Next human action',q.length?'Judge '+q[0].id:'None — funnel working','see the action bar above')+'</div>');
   h+='<div class="grid g2" style="margin-top:12px">';
   /* left: decisions awaiting + blockers */
   h+='<div class="stack">';
@@ -1524,6 +1530,7 @@ VIEWS['research.flow']=function(){
       for(let i=0;i<12;i++){const sym=names[i];const sweep=r()>0.4;const call=r()>0.35;const prem=(0.3+r()*2.4);
         rows+='<tr><td class="mono">'+(10*60+31-i*3<600?'09':'10')+':'+String((31-i*3+60)%60).padStart(2,'0')+'</td><td class="mono"><b>'+sym+'</b></td><td>'+chip(sweep?'SWEEP':'BLOCK',sweep?'ch-live':'ch-info','◆')+'</td><td class="mono">'+(call?'C':'P')+' '+(r()>0.5?'21':'14')+'DTE</td><td class="r num">$'+U.fmt(prem,1)+'M</td><td class="mono">'+(r()>0.4?'ASK':'BID')+'</td><td class="i2" style="font-size:10px">'+(sweep?'multi-exchange aggression':'single print — negotiated')+'</td></tr>'}
       return tbl(['Time','Sym','Type','Contract','>Premium','Side','Read'],rows)})(),{flush:true});
+  h+=panel('MICROSTRUCTURE — L2 book & tape','depth and prints are context for fills, never a signal · <span class="demo-wm">demo twin</span>',microPanel());
   h+='<div class="grid g2">';
   h+=panel('NET PREMIUM','who is actually paying up',
     '<div class="grid g2">'+stat('Session premium','$14.2M','across promoted set')+stat('Call vs put','61% / 39%','call-skewed')+stat('Net directional','+$3.1M bull','after hedge discounting')+stat('Top whale','NVDA 200C $1.9M','whale score 84/100')+'</div>');
@@ -1798,6 +1805,8 @@ VIEWS['portfolio.exposure']=function(){
     stat('Net theta','+$13.6/day','credit spread carries the debit legs')+
     stat('Net vega','+7.9','long vol tilt from NVDA calls')+
     stat('Positions','3 <span class="i2" style="font-size:10px">open</span>','2 managing · 1 working')+'</div>';
+  h+=panel('CORRELATION MATRIX — the cluster cap’s evidence (RISK-041)','0.84 is why NVDA+AMD count as ONE bet',
+    tbl(['','NVDA','AMD','SPY','META'],[['NVDA','1.00','<b style="color:var(--warn)">0.84</b>','0.61','0.52'],['AMD','<b style="color:var(--warn)">0.84</b>','1.00','0.58','0.47'],['SPY','0.61','0.58','1.00','0.66'],['META','0.52','0.47','0.66','1.00']].map(r=>'<tr><td class="mono"><b>'+r[0]+'</b></td>'+r.slice(1).map(c=>'<td class="r num">'+c+'</td>').join('')+'</tr>').join('')),{flush:true});
   h+=panel('BY DIRECTION & HORIZON','LAW-016 alignment check',
     tbl(['Position','Dir','Horizon','DTE','Aligned'],[
       ['NVDA 200C ×2','LONG','swing','21','✓'],
@@ -1994,6 +2003,10 @@ VIEWS['system.health']=function(){
     kv('SCALE ENVELOPE','5,234 sym / 96 workers / ~$12.9k/mo → 10k / 164 / ~$20.8k → 25k / 384 / ~$45.7k')+
     kv('INVARIANTS','positions, risk, broker recon and T0 can never be starved · demotion never deletes evidence · every expensive call requires a promoted symbol + structured evidence object')+
     '</div></div>');
+  h+=panel('COMPUTE & QUEUES — target worker fabric','SPEC (Phase W4): bounded pools, explicit backpressure, poison jobs → DLQ after 3 fails',
+    '<div class="grid g2"><div>'+tbl(['Pool','Replicas×conc','p95'],[['Market ingest','12×24','—'],['Feature engine','24×64','—'],['Structure workers','16×24','—'],['Agent runtime','12×36','1,180ms'],['Packet builder','6×12','—'],['Risk & execution','8×16','22ms']].map(r=>'<tr><td>'+r[0]+'</td><td class="mono" style="font-size:10px">'+r[1]+'</td><td class="r num">'+r[2]+'</td></tr>').join(''))+'</div>'+
+    '<div>'+kv('AUTOSCALE','util >75% OR queue-age >5s ×3 windows → +25% replicas, 90s cooldown')+kv('BACKPRESSURE','P2/P3 age >15s → coalesce to latest; P0 age >1s → shed ALL backfill + page')+kv('LANES','NEVER SHED (positions/risk/T0) → PRESERVE (T1) → DEGRADE FIRST (T2) → SHED NONCRITICAL (backfill)')+kv('EVENT ENVELOPE','<span class="mono" style="font-size:9.5px">event_id · topic · type · schema_id atlas.v13.* · rules_version · correlation_id RUN-* · sequence</span>')+'</div></div>'+
+    tbl(['Topic','Partitions','>Rate','Retention'],[['market.trades','128','9,850/s','24h'],['market.quotes','128','5,920/s','24h'],['features.symbol','64','1,456/s','7d'],['agents.votes','16','—','7y'],['orders.lifecycle','16','—','7y'],['audit.events','16','—','7y']].map(r=>'<tr><td class="mono" style="font-size:10.5px">'+r[0]+'</td><td class="r num">'+r[1]+'</td><td class="r num">'+r[2]+'</td><td class="r num i2">'+r[3]+'</td></tr>').join('')),{flush:true});
   h+=panel('UNIVERSE HEALTH — the mandate’s own instruments','SLAs with 5× headroom on the cadence clock · <span class="demo-wm">demo readings</span>',
     tbl(['Instrument','>Reading','>SLA','State'],[
      ['Full-universe 5m feature pass','34.8s','≤ 60s','<span class="up">GREEN</span>'],
@@ -2047,6 +2060,9 @@ VIEWS['system.agents']=function(arg){
     const seats=SEATS.filter(s=>s.grp===g);
     h+='<div class="kick" style="font-family:var(--mono);font-size:9.5px;letter-spacing:1.4px;color:var(--ink2);margin:14px 0 6px;text-transform:uppercase">'+g+' — '+seats.length+' seats</div><div class="grid g4">'+
       seats.map(s=>'<div class="stat" style="cursor:pointer" data-cmd="nav.system.agents" data-arg="'+s.id+'"><div class="k">'+s.id+(s.veto?' <span style="color:var(--blk)">⛔ VETO</span>':'')+'</div><div class="v" style="font-size:12px">'+s.nm+'</div><div class="s">'+s.tier+' · '+s.cad+'</div></div>').join('')+'</div>'});
+  h+=panel('LLM INVOCATION POLICY — when a seat may burn tokens','the budget linter: raw universe gets ZERO model calls',
+    tbl(['Stage','Policy'],[['Raw universe (5,234)','Deterministic only — 0 LLM calls, ever'],['Promoted T2','Haiku/Sonnet summary, bounded by evidence delta'],['T1 forming','Specialist subset only'],['Triggered','Full required committee, schema-forced votes; risk/data short-circuit'],['Packet explanation','Cached evidence refs — no new numeric facts'],['Overnight learning','Batch API, fixed budget, never auto-promotes rules']].map(r=>'<tr><td class="mono" style="font-size:10.5px"><b>'+r[0]+'</b></td><td class="i1" style="font-size:11px">'+r[1]+'</td></tr>').join(''))+
+    '<div class="i2" style="font-size:10.5px;padding:8px 12px">Tier routing: S00–S03 Opus (judgment+governance) · technical/catalyst courts Sonnet · scanners/routers Haiku. Spend today: bounded by the '+ck('universe.promotions_per_day_max')+'-promotion cap.</div>',{flush:true});
   h+='<div class="banner info" style="margin-top:12px"><span class="bico">i</span><div><b>Unappealable veto surface:</b> S02 DATA stale/missing/conflict · S01 RISK limits/circuits/stop · S26 5R honest path absent · S33 EXPOSURE cluster stack · S22 OPTIONS bad contract · S28 PACKET not 19/19.</div></div>';
   return h;
 };
@@ -2082,6 +2098,10 @@ VIEWS['system.integrations']=function(){
      ['Postgres + Timescale + pgvector','State · time series · KB retrieval','—','Phase 1'],
      ['Langfuse + OTel','Traces, cost, reasoning reconstruction','—','Phase 1'],
     ].map(r=>'<tr><td><b>'+r[0]+'</b></td><td class="i1" style="font-size:11px">'+r[1]+'</td><td>'+chip(r[2],r[2]==='NOT CONFIGURED'?'ch-mut':'ch-demo',r[2]==='NOT CONFIGURED'?'·':'◈')+'</td><td class="i2" style="font-size:10.5px">'+r[3]+'</td></tr>').join('')),{flush:true});
+  h+=panel('TRANSPORT SEAM — connect a real backend','the Phase W4 boundary, testable today: probe fails closed, never renders fiction',
+    '<div class="row"><input id="api-base" class="inp" placeholder="http://127.0.0.1:8000" style="max-width:320px"><button class="btn pri" data-cmd="backend.connect">Probe /v1/health</button><span class="pill">contract: state.global · state.symbol.{X} · votes.{trade_id} · packets · fills · learning · universe.summary</span></div>'+
+    '<div class="i2" style="font-size:10.5px;margin-top:8px">Success → schema-validated sync per the frontend binding contract. Failure → the demo adapter stays active and says so. Reload never silently raises authority.</div>')+
+    '<div class="banner info"><span class="bico">i</span><div><b>Small-scale cost meter (pre-fabric):</b> data ≈$543/mo (ThetaData $80 · Polygon $199 · UW $48 · news $216) + LLM ≈$865 + infra $65 ≈ <b>$1,473/mo</b> — the single-operator twin of the $12.9k fabric envelope.</div></div>';
   h+='<div class="banner warn"><span class="bico">!</span><div><b>No secrets in the browser, ever.</b> The legacy prototype rendered masked “API keys” implying credentials lived client-side. This build renders integration state only; keys live in a server-side secrets manager in production.</div></div>';
   return h;
 };
@@ -2165,6 +2185,14 @@ VIEWS['system.integrity']=function(){
   h+=panel('STRESS RANGE — the failure library vs the current build','expected gate behavior vs actual, row by row — red on any divergence',
     '<div class="btnrow" style="margin-bottom:10px"><button class="btn pri" data-cmd="stress.run">Run stress range</button>'+(STRESS_LAST?'<span class="pill">'+STRESS_LAST.filter(x=>x.pass).length+'/'+STRESS_LAST.length+' as specified</span>':'<span class="pill">not yet run this session</span>')+'</div>'+
     (STRESS_LAST?tbl(['Scenario','Expected','Actual',''],STRESS_LAST.map(st=>'<tr'+(st.pass?'':' style="background:var(--blk-bg)"')+'><td><b style="font-size:11px">'+st.id+'</b> · <span class="i1" style="font-size:11px">'+U.esc(st.nm)+'</span></td><td class="i2" style="font-size:10.5px">'+U.esc(st.exp)+'</td><td class="mono" style="font-size:10.5px;color:'+(st.pass?'var(--pos)':'var(--blk)')+'">'+U.esc(st.actual)+'</td><td>'+(st.pass?chip('AS SPEC','ch-ok','✓'):chip('DIVERGED','ch-blk','✕'))+'</td></tr>').join('')):''));
+  h+=panel('PRODUCTION-AUDIT FINDINGS (S6 lineage) — defects the rebuild fixed by construction','the legacy audit’s P0 list, kept visible so it never regresses',
+    [['Vote schema drift','Canonical ENUMS module + integrity check — non-canonical verdicts cannot render'],
+     ['Human-pipeline crash (scalar int-cast)','The human is a hard edge (step 15), never a castable pipeline stage'],
+     ['Missing fan-in','Director integration is an explicit step with a join contract — never implicit'],
+     ['Risk gate too early','Risk runs AFTER contract selection (step 12 of 14) — an impossible contract kills the chart first'],
+     ['Scale misconception (34 agents × 5,000 × every minute)','The invariant: deterministic engine watches everything; LLM touches bounded by promotions']].map(r=>kv('✕→✓','<b style="font-size:11px">'+r[0]+'</b> — <span class="i1" style="font-size:11px">'+r[1]+'</span>')).join(''));
+  h+=panel('GRADUATED CAPITAL LADDER — live authority is EARNED','stage 5 reads NOT EARNED until the evidence exists; no shortcut is expressible',
+    tbl(['Stage','Gate','State'],[['1 · Replay','Point-in-time reconstruction, no lookahead','<span class="up">AVAILABLE (demo replays deterministically)</span>'],['2 · Paper parity','BT↔paper divergence < 5%, n≥30','<span style="color:var(--warn)">AWAITS PHASE 5</span>'],['3 · Shadow live','Real data, zero orders, decision-match scoring','<span style="color:var(--warn)">AWAITS PHASE 4–7</span>'],['4 · Limited live','Human token per trade, minimum size','<span class="dn">LOCKED — Phase 8</span>'],['5 · Scaled','Caps grow only with evidence','<span class="dn">NOT EARNED</span>']].map(r=>'<tr><td class="mono"><b>'+r[0]+'</b></td><td class="i1" style="font-size:11px">'+r[1]+'</td><td class="mono" style="font-size:10.5px">'+r[2]+'</td></tr>').join('')),{flush:true});
   h+=panel('GO-LIVE GATES — brutally honest','a gate at 0% is information, not embarrassment',
     tbl(['Gate','>State','Evidence'],[
      ['UI / workflows','100%','39 workspaces browser-verified, 0 console errors'],
@@ -2271,6 +2299,14 @@ function drawChartX(cvId,sym,opts){POSTRENDER.push(()=>{const cv=document.getEle
   if(opts.ema50){const e=ema(50);x.beginPath();e.forEach((v,i)=>{const X=i*cw+cw/2,Y=py(v);i?x.lineTo(X,Y):x.moveTo(X,Y)});x.strokeStyle='rgba(157,141,248,.8)';x.lineWidth=1.6;x.stroke()}
   if(opts.vwap){let cum=0,cv2=0;const w=data.map(c=>{const tp=(c.h+c.l+c.c)/3;cum+=tp*c.v;cv2+=c.v;return cum/cv2});
     x.beginPath();w.forEach((v,i)=>{const X=i*cw+cw/2,Y=py(v);i?x.lineTo(X,Y):x.moveTo(X,Y)});x.strokeStyle='rgba(87,199,227,.7)';x.setLineDash([3,4]);x.stroke();x.setLineDash([])}
+  if(opts.bb){const n2=20,k2=2;const sma=data.map((c,i)=>{const w2=data.slice(Math.max(0,i-n2+1),i+1);return w2.reduce((a2,c2)=>a2+c2.c,0)/w2.length});
+    const sd=data.map((c,i)=>{const w2=data.slice(Math.max(0,i-n2+1),i+1);const m=sma[i];return Math.sqrt(w2.reduce((a2,c2)=>a2+(c2.c-m)*(c2.c-m),0)/w2.length)});
+    [1,-1].forEach(sg=>{x.beginPath();sma.forEach((m,i)=>{const X=i*cw+cw/2,Y=py(m+sg*k2*sd[i]);i?x.lineTo(X,Y):x.moveTo(X,Y)});x.strokeStyle='rgba(157,141,248,.4)';x.lineWidth=1.2;x.stroke()})}
+  if(opts.rsi){const per=14;let g=0,l2=0;const rsi=data.map((c,i)=>{if(!i)return 50;const ch2=c.c-data[i-1].c;g=(g*(per-1)+Math.max(ch2,0))/per;l2=(l2*(per-1)+Math.max(-ch2,0))/per;return l2===0?100:100-100/(1+g/l2)});
+    const y0=H*0.86,hh=H*0.13;x.fillStyle='rgba(12,18,32,.85)';x.fillRect(0,y0,W-AX,hh);
+    [30,70].forEach(lv=>{const Y=y0+hh-(lv/100)*hh;x.strokeStyle='rgba(151,166,192,.2)';x.setLineDash([3,4]);x.beginPath();x.moveTo(0,Y);x.lineTo(W-AX,Y);x.stroke();x.setLineDash([])});
+    x.beginPath();rsi.forEach((v,i)=>{const X=i*cw+cw/2,Y=y0+hh-(v/100)*hh;i?x.lineTo(X,Y):x.moveTo(X,Y)});x.strokeStyle='rgba(231,182,83,.85)';x.lineWidth=1.6;x.stroke();
+    x.fillStyle='#67748C';x.fillText('RSI(14)',8,y0+16)}
   if(opts.levels!==false&&s&&s.levels&&s.levels.entry&&!opts.mini){
     [['ENTRY',s.levels.entry,'#5AA7FF'],['STOP',s.levels.stop,'#FF4D5F'],['T1',s.levels.t1,'#2FD6A0'],['T2 · 5R',s.levels.t2,'#2FD6A0'],['T3',s.levels.t3,'#2FD6A0']].forEach(([nm,p,col])=>{
       if(!p)return;const y=py(p);if(y<0||y>H)return;
@@ -2299,8 +2335,8 @@ VIEWS['research.chart']=function(){
   const seg=(items,key,cur)=>'<span class="seg">'+items.map(v2=>'<button class="'+(cur===v2?'on':'')+'" data-cmd="chartx.set" data-arg="'+key+'='+v2+'">'+v2+'</button>').join('')+'</span>';
   const tog=(label,k)=>'<button class="btn sm'+(CHARTX[k]?' pri':'')+'" data-cmd="chartx.set" data-arg="'+k+'">'+label+'</button>';
   h+='<div class="row" style="margin-bottom:10px">'+seg(TFS,'tf',CHARTX.tf)+seg(['candles','line','area'],'type',CHARTX.type)+
-     tog('EMA20','ema20')+tog('EMA50','ema50')+tog('VWAP','vwap')+tog('Zones','zones')+tog('Replay','replay')+tog('Vision wall','wall')+
-     '<button class="btn sm" data-cmd="chartx.notes">↓ TA notes .md</button></div>';
+     tog('EMA20','ema20')+tog('EMA50','ema50')+tog('VWAP','vwap')+tog('BB','bb')+tog('RSI','rsi')+tog('Zones','zones')+tog('Replay','replay')+tog('Vision wall','wall')+
+     '<button class="btn sm" data-cmd="chartx.notes">↓ TA notes .md</button><button class="btn sm gold" data-cmd="chart.alert">⚑ Alert @ last</button></div>';
   if(CHARTX.wall){
     h+=panel('VISION WALL — eight timeframes, one read each','the machine looks top-down; so should you',
       '<div class="grid g4">'+TFS.map((tf,i)=>{
@@ -2814,6 +2850,35 @@ CMD.define({id:'zone.inspect',label:'Zone inspector',purpose:'Every zone answers
    kv('ZONE',z[0])+kv('1 · WHY VALID',z[1])+kv('2 · WHAT INVALIDATES',z[2])+kv('3 · WHICH CONTRACT',z[3])+kv('4 · EARLY / CLEAN / LATE',z[4])+
    '<div class="i2" style="font-size:10.5px;margin-top:8px">Doctrine: a zone that cannot answer all four questions is decoration, not evidence (LAW-010).</div>',
    '<button class="btn" data-cmd="ui.closeModal">Close</button>')}});
+/* ═══════════ V12.2 · UNIFIED-build absorption (final deltas) ═══════════ */
+
+/* chart: Bollinger + RSI pane + alert-from-chart */
+CHARTX.bb=false;CHARTX.rsi=false;
+CMD.define({id:'chart.alert',label:'Alert at last price',purpose:'Create a real P2 price alert from the chart (routes to Alert Center)',
+ run:()=>{const s2=symBy(S.sym);pushAlert('P2',s2.sym+' price alert armed at '+U.fmt(s2.px)+' — created from chart',null);
+  SVR.audit('HUMAN (owner)','alert','Chart alert armed: '+s2.sym+' @ '+U.fmt(s2.px));
+  UI.toast('Alert armed at '+U.fmt(s2.px)+' — see Markets → Alert Center','ok','CHART ALERT');render()}});
+
+/* L2 microstructure demo twin */
+function microPanel(){
+ const s2=symBy(S.sym),r=localRng('l2-'+s2.sym),spr=s2.px*0.0002;
+ let book='';for(let i=4;i>=0;i--){const asz=Math.round(200+r()*1800),ap=s2.px+spr*(i+1);book+='<div class="kv" style="padding:2px 0;border:none"><span class="k" style="width:auto"><span class="mono dn">'+U.fmt(ap)+'</span></span><span class="v"><div class="gauge" style="width:'+(asz/20)+'px;max-width:160px"><i style="background:var(--neg)"></i></div> <span class="mono i2" style="font-size:9.5px">'+asz+'</span></span></div>'}
+ book+='<div class="kv" style="border:none"><span class="k" style="width:auto;color:var(--info)">MID '+U.fmt(s2.px)+'</span><span class="v i2" style="font-size:9.5px">spread '+U.fmt(spr*2,2)+' ('+U.fmt(spr*2/s2.px*100,3)+'%)</span></div>';
+ for(let i=0;i<5;i++){const bsz=Math.round(200+r()*1800),bp=s2.px-spr*(i+1);book+='<div class="kv" style="padding:2px 0;border:none"><span class="k" style="width:auto"><span class="mono up">'+U.fmt(bp)+'</span></span><span class="v"><div class="gauge" style="width:'+(bsz/20)+'px;max-width:160px"><i></i></div> <span class="mono i2" style="font-size:9.5px">'+bsz+'</span></span></div>'}
+ let tape='';for(let i=0;i<8;i++){const sz=Math.round(50+r()*r()*4000);tape+='<div class="kv" style="padding:2px 0;border:none"><span class="k" style="width:52px">10:'+String(31-i).padStart(2,'0')+'</span><span class="v mono" style="font-size:10px"><span class="'+(r()>0.45?'up':'dn')+'">'+U.fmt(s2.px*(1+(r()-0.5)*0.001))+'</span> × '+sz+(sz>3000?' <span style="color:var(--warn)">BLOCK</span>':'')+'</span></div>'}
+ return'<div class="grid g2"><div><div class="kv" style="border:none"><span class="k">L2 BOOK · 5 LEVELS</span><span class="v demo-wm">demo twin</span></div>'+book+'</div><div><div class="kv" style="border:none"><span class="k">TIME & SALES</span><span class="v i2" style="font-size:9.5px">blocks ≥3,000 flagged</span></div>'+tape+'</div></div>';
+}
+
+/* backend connect seam — the real transport boundary, fail-closed */
+CMD.define({id:'backend.connect',label:'Connect backend',purpose:'Probe /v1/health on the configured base — success syncs state, failure keeps the demo adapter (fail-closed, never fiction)',
+ run:async()=>{const inp=$('#api-base');const base=(inp&&inp.value.trim())||'http://127.0.0.1:8000';
+  UI.toast('Probing '+base+'/v1/health …','','TRANSPORT');
+  try{const ctl=new AbortController();setTimeout(()=>ctl.abort(),3500);
+   const res=await fetch(base+'/v1/health',{signal:ctl.signal});
+   if(res.ok){SVR.audit('SVR Transport','backend','Backend CONNECTED at '+base+' — schema-validated sync would begin (Phase W4)');UI.toast('Backend reachable — Phase W4 sync contract applies from here','gold','TRANSPORT')}
+   else throw new Error('HTTP '+res.status)}
+  catch(e){SVR.audit('SVR Transport','backend','Backend unreachable ('+(e.name==='AbortError'?'timeout':e.message)+') — demo adapter remains active, fail-closed');
+   UI.toast('Backend unavailable — demo adapter remains active. No panel renders fiction; that is the point.','warn','FAIL-CLOSED')}}});
 /* ═══════════ ENGINE · demo heartbeat — one loop, no decorator towers ═══════════
    The legacy stacked 13 render wrappers and two competing 1s intervals.
    Here: ONE 2s tick that mutates state, then targeted DOM patches. */

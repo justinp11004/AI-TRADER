@@ -82,3 +82,18 @@ Unlike the legacy "P9 preservation registry" (which passed by checking that a fu
 | Config changelog (failure→fix per release) + rules_version badge | **SYSTEM → Config** + rail foot | Real history of this build |
 | Universe tier caps (t1_max 300 / watch 50 / promotions 40) + health SLAs + the hard invariant | **CONFIG** + **MARKETS → Scanner** + **SYSTEM → Health** | Config + spec surfaces |
 | needs_user_rule → ask-card conversion (SIM-0001 refusal doctrine) | **REVIEW → Autopsy** (AUT-118 button) | Interactive |
+
+## V11 UNIFIED build absorption (final delta pass)
+
+| UNIFIED capability | V12.2 home |
+|---|---|
+| Chart: Bollinger bands · RSI(14) sub-pane · alert-from-chart (arms a real P2 alert) | **RESEARCH → Chart** |
+| L2 order book (5 levels) + Time & Sales with block flags | **RESEARCH → Flow** (demo twin, watermarked) |
+| Correlation heat-matrix (NVDA·AMD 0.84 → cluster cap evidence, RISK-041) | **PORTFOLIO → Exposure** |
+| Compute & queue fabric: worker pools, autoscale policy, backpressure lanes, event topics + envelope contract | **SYSTEM → Health** |
+| LLM invocation policy (raw universe = 0 model calls) + tier routing + spend bound | **SYSTEM → Agent Council** |
+| S6 production-audit P0 findings (vote drift, human int-cast, missing fan-in, early risk gate, scale misconception) — kept visible as fixed-by-construction | **SYSTEM → Integrity** |
+| Graduated capital ladder (replay → paper parity → shadow → limited live → scaled: NOT EARNED) | **SYSTEM → Integrity** |
+| E4 executive brief (best setup · hidden risk · most important rejection · next human action) | **COMMAND → Cockpit** |
+| Real backend transport seam — /v1/health probe, fail-closed, never renders fiction | **SYSTEM → Integrations** |
+| Small-scale cost meter ($1,473/mo single-operator twin of the $12.9k fabric) | **SYSTEM → Integrations** |
