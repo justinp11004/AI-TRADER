@@ -13,8 +13,8 @@ No claim below exceeds its evidence. "Live trading readiness" is **0%** by desig
 | Golden packet (19 sections, 19 votes, dissent) | ✅ SHIPPED | PKT-2231 content extracted verbatim from legacy canon; integrity check confirms 19/19 |
 | Decision → journal → token flow | ✅ SHIPPED | Playwright: APPROVE_PAPER_ONLY journaled, FSM → APPROVED_PAPER, token issued |
 | Demo watermarking / no live claims | ✅ SHIPPED | Persistent top-bar watermark + rail banner + mode ladder; integrity check "no live claims in DEMO" |
-| Real market data | ❌ NOT BUILT | Phase 2 — provider adapters behind canonical interfaces |
-| Real backend (FastAPI/Postgres/Redis) | ❌ NOT BUILT | Phase 1–2; `SVR.*` mirrors the target `/v1/*` contract for a 1:1 swap |
+| Real market data | ✅ SHIPPED (V13) | `backend/atlas-server.mjs`: Stooq → Yahoo provider chain, strictly validated; SSE stream into every data tab; unreachable providers degrade to a **labeled** SIM feed (`synthetic:true` on every value) — verified end-to-end via Playwright |
+| Real backend | ✅ SHIPPED (V13, single-node) | Zero-dep Node service implementing the `/v1/*` contract the SVR boundary was designed for: server-side risk law (sub-5R blocked server-side, browser-verified), single-use hash-bound tokens, hash-chained persisted audit ledger, health/stream. FastAPI/Postgres/Redis fabric remains the scale-out path (Phase 2+) |
 | LLM agent runtime | ❌ NOT BUILT | Phase 4 — five-agent proof first (S08, S12, S01, S00, S28) |
 | Paper broker adapter | ❌ NOT BUILT | Phase 5 — fill model doctrine documented, not connected |
 | Live execution | ❌ FORBIDDEN | Phase 8 only, after drills + independent safety review; UI already refuses honestly |

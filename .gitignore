@@ -1,0 +1,3 @@
+# runtime state — the live spine's persisted ledger stays local
+backend/data/
+node_modules/
