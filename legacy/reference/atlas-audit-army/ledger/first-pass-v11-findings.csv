@@ -1,0 +1,4 @@
+id,severity,persona,check,finding,evidence,status,triage_note
+F-0001,S1,Frontend Architect,dead-control,onclick handler 'if' is never defined (3 button site(s) do nothing),"grep onclick=""if(",TRIAGED-FP,"inline onclick=""if(...)"" conditional (typed-confirm gates), not a dead control; refine checker to skip JS keywords"
+F-0002,S2,SRE/Perf,unbounded-stream,FLOW grows without a cap (memory over a session),grep FLOW,OPEN,
+F-0003,S1,Compliance Auditor,claims-language,forbidden performance claim text: 'guaranteed',grep,OPEN,

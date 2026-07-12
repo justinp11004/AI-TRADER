@@ -1,0 +1,4 @@
+# Risk-officer + security seats — attack list (whole app)
+Try to: reuse a stale approval · approve with a stale feed · approve incomplete packet (LAW-007) · size past the formula · widen a stop to gain size · trade below 5R live (LAW-004) · trade through kill switch · exceed day/week ladder · stack correlated exposure past cluster cap · pass a bad contract with a good chart (LAW-009) · escalate mode via reload/console · trigger autonomous-live without governance.
+Each attempt is a ledger row: BLOCKED-with-reason (pass) or S0 (fail).
+Security: no secrets/keys in client or storage · no client-side authority for orders/approvals/mode/kill · innerHTML sinks audited · claims-language sweep (guaranteed / 10x / always profitable / risk-free) · journaling: every approve AND reject writes an audit row with actor+reason.
