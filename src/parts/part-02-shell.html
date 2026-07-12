@@ -1,0 +1,40 @@
+<body>
+<div id="app">
+  <div id="topbar" aria-label="Desk status"></div>
+  <nav id="rail" aria-label="Primary domains"></nav>
+  <div id="main">
+    <div id="subnav" role="tablist" aria-label="Workspaces"></div>
+    <main id="view" tabindex="-1"><div class="vwrap" id="vwrap"></div></main>
+  </div>
+</div>
+<div id="scrim"></div>
+<aside id="drawer" aria-label="Evidence drawer"></aside>
+<div id="modal-scrim"><div id="modal" role="dialog" aria-modal="true"></div></div>
+<div id="palette" role="dialog" aria-label="Command palette"></div>
+<div id="toasts" aria-live="polite"></div>
+<script>
+'use strict';
+/* ════════════════════════════════════════════════════════════════════
+   ATLAS PRIME — DECISION OPERATING SYSTEM · V11 clean rebuild
+   ──────────────────────────────────────────────────────────────────
+   MODE: DEMO. Every market value in this build is synthetic, generated
+   by a seeded deterministic engine, and watermarked as such. Nothing
+   here claims live data, live orders, or profitability. The UI renders
+   decisions; authority (risk, approval, execution) is modeled as a
+   server boundary (SVR.*) so the real backend can replace it 1:1.
+   ──────────────────────────────────────────────────────────────────
+   Architecture (single-file by deliberate ADR-002, modular inside):
+     U        utilities + formatting
+     RNG      seeded mulberry32 — determinism for replayable demo
+     CLOCK    simulated exchange clock (ET), session phases
+     CONFIG   runtime numeric truth (atlas_config mirror)
+     LAWS     constitution (enforced in SVR gates, displayed in SYSTEM)
+     ENUMS    canonical decision/state enums — no ad-hoc strings
+     STORE    central state + pub/sub
+     SVR      simulated server boundary: risk engine, token issuer,
+              packet FSM, order FSM, audit ledger (append-only)
+     CMD      command registry — every control is a typed contract
+     UI       shell, router, drawer/modal/palette/toasts
+     DOMAINS  the seven primary domains, each with sub-workspaces
+     ENGINE   demo tick engine (quotes, TTLs, blotter, alerts)
+   ════════════════════════════════════════════════════════════════════ */

@@ -14,6 +14,10 @@ V14 grows the desk the way five years of disciplined operation would: **14 new w
 - **COMMAND** — Morning briefing compiled live from actual app state, every section citing its source workspace, acknowledged into the audit ledger, downloadable as real .md
 - **SYSTEM** — SLO observatory (**real measured render timings**, not claims) · Release governance (readiness scorecard computed from the live test suites, rollback drill that executes) · **AUDIT ARMY**: 12 expert seats, 8 executable passes — R tie-outs, the full gate attack list run against the live risk engine (kill-switch bypass, token replay, stale-feed approval, sub-5R), a **source self-scan** (the app greps its own script for inline handlers, unseeded randomness, secrets), claims-language sweep with context triage — feeding a findings ledger where false positives are triaged with reasons, never deleted. Coverage is stated as **executed matrix cells**, never a typed number. On its first run the army caught a real S1 in its own self-scan threshold — the check was refined and the story is preserved in the ledger. The audit audits itself.
 
+## Building from source
+
+`index.html` is generated — the source of truth is `src/parts/` (29 modules, one concern each, concatenated in a fixed order by `src/build.sh`; `part-14-engine.js` boots last). Rebuild with `bash src/build.sh`; the output is deterministic. Browser verification lives in `tools/verify.mjs` (Playwright: every workspace, the decision/kill/teach/chart/army flows, then the live-spine phase against a spawned backend). Authoring conventions for new modules: `docs/V14-CONVENTIONS.md`.
+
 ## Go live — the real backend ships in this repo
 
 ```bash
