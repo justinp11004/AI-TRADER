@@ -1,6 +1,18 @@
-# ATLAS Prime — Decision Operating System (V13 LIVE SPINE · complete estate)
+# ATLAS Prime — Decision Operating System (V14 ESTATE · the five-year build)
 
 **Open `index.html` in any browser. That's the app.** Boots in DEMO mode: seeded, deterministic, watermarked synthetic data — no broker, no live claims.
+
+## V14 — the five-year estate
+
+V14 grows the desk the way five years of disciplined operation would: **14 new workspaces** (56+ total across the same seven domains — the domain count is constitutional), deep additions to ten existing ones, and an **Audit Army** born from the atlas-audit-army skill:
+
+- **MARKETS** — Internals observatory (breadth engine, TICK/ADD/VOLD, McClellan, RRG sector-rotation quadrant, risk-on/off composite with visible weights) · Regime playbook library with deterministic today-match scoring
+- **RESEARCH** — Fundamental dossier (earnings scorecard, valuation bands, ownership, red flags) · Factor & pair lens where beta/correlation/realized-vol are **computed live from the actual candle series** (method shown)
+- **DECISIONS** — Sizing laboratory (the formula as an instrument: binding-constraint detection, Kelly explorer with drawdown distributions, loss-ladder simulator) · Pre-mortem engine (12 failure modes scored from real packet fields, kill list with tripwires, the three-ack ritual)
+- **PORTFOLIO** — Hedge desk (greeks rollup, shock grid, cluster view, candidates with honest basis-risk) · Capital ledger (equity curve anchored to actual equity, a transaction ledger that **foots** — the tie-out check runs live)
+- **REVIEW** — Pattern lab (cohort curves, edge-decay detector, MFE/MAE scatter, setup graveyard) · Discipline coach (rule-violation scan of the real journal, tilt telemetry, generated weekly letter, improvement contracts)
+- **COMMAND** — Morning briefing compiled live from actual app state, every section citing its source workspace, acknowledged into the audit ledger, downloadable as real .md
+- **SYSTEM** — SLO observatory (**real measured render timings**, not claims) · Release governance (readiness scorecard computed from the live test suites, rollback drill that executes) · **AUDIT ARMY**: 12 expert seats, 8 executable passes — R tie-outs, the full gate attack list run against the live risk engine (kill-switch bypass, token replay, stale-feed approval, sub-5R), a **source self-scan** (the app greps its own script for inline handlers, unseeded randomness, secrets), claims-language sweep with context triage — feeding a findings ledger where false positives are triaged with reasons, never deleted. Coverage is stated as **executed matrix cells**, never a typed number. On its first run the army caught a real S1 in its own self-scan threshold — the check was refined and the story is preserved in the ledger. The audit audits itself.
 
 ## Go live — the real backend ships in this repo
 

@@ -17,6 +17,7 @@ No claim below exceeds its evidence. "Live trading readiness" is **0%** by desig
 | Real backend | ✅ SHIPPED (V13, single-node) | Zero-dep Node service implementing the `/v1/*` contract the SVR boundary was designed for: server-side risk law (sub-5R blocked server-side, browser-verified), single-use hash-bound tokens, hash-chained persisted audit ledger, health/stream. FastAPI/Postgres/Redis fabric remains the scale-out path (Phase 2+) |
 | LLM agent runtime | ❌ NOT BUILT | Phase 4 — five-agent proof first (S08, S12, S01, S00, S28) |
 | Paper broker adapter | ❌ NOT BUILT | Phase 5 — fill model doctrine documented, not connected |
+| Audit discipline (12-seat army, executable passes) | ✅ SHIPPED (V14) | In-app Audit Army: gate attack-list executed against SVR (verify asserts zero open S0/S1), source self-scan, claims sweep with context triage, findings ledger with reasoned triage, six-part cycle report. Coverage counted as executed matrix cells |
 | Live execution | ❌ FORBIDDEN | Phase 8 only, after drills + independent safety review; UI already refuses honestly |
 | Return guarantees | ❌ NONE, EVER | Guarantee claims are prohibited by the product's own constitution |
 

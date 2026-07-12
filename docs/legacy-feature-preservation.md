@@ -1,6 +1,21 @@
 # Feature preservation map — every legacy capability and where it lives now
 
 Directive honored: **merge and unify all features; remove none.** All 63 legacy routes (V6–V10) **plus the four early prototypes (GEN0–GEN3)** map below.
+
+## V14 additions — V12_AUDITED + atlas-audit-army absorption
+
+| Legacy source | Capability | V14 home |
+|---|---|---|
+| atlas-audit-army skill (12-seat doctrine, static_audit.py, persona checklists, findings CSV) | Expert-army audit protocol | **SYSTEM → Audit Army**: 12 seats, 8 *executable* passes (R tie-outs, SVR gate attack list, source self-scan, claims sweep with context triage, stream caps, LAW-018 journaling), findings ledger seeded with the real V11 first-pass rows + this build's own static-audit results (2 documented triage-FPs), six-part cycle report + CSV export. Verify gate: zero open S0/S1 or the build fails |
+| V12_AUDITED · S6 Consistency Findings | Findings table + fix log | Audit Army findings ledger (statuses OPEN/FIXED/TRIAGED-FP/WONTFIX with mandatory reasons) + the production-audit findings panel retained in SYSTEM → Integrity |
+| V12_AUDITED · E8 Tab Production Matrix | 54-route production registry with maturity | **SYSTEM → Releases**: registry computed over the *live* route registry at render (UI/BE/DATA/QA grades with the grading method stated) |
+| V12_AUDITED · E9 Eight-Pass Validation | Ordered validation passes | Audit Army ordered passes (executed, not counted) + Releases readiness scorecard computed from the live suites |
+| V12_AUDITED · E5 1,000-Upgrade Control | Transformation governance registry | **SYSTEM → Releases** governance summary (50×20, status enums, "false completion claims: 0") |
+| V12_AUDITED · P6 Agent Runtime economics | LLM spend tied to decision value | **SYSTEM → Agent Council** invocation-economics panel (tier costs, $/packet, daily envelope) |
+| V12_AUDITED · P8 Capacity & Cost | Unit economics + scale scenarios | **SYSTEM → Integrations** scale-scenario table (5k/10k/25k symbols, sub-linear doctrine) |
+| V12_AUDITED · S4 semantic taxonomy | FACT / INFERENCE / OPINION typing | Taxonomy helper + doctrine in **SYSTEM → Knowledge Base**; used across V14 fabric panels |
+| V12_AUDITED · M2 "what kills programs" | Pre-answered failure budget | **PORTFOLIO → Paper Account** panel |
+| Five-year growth (original) | 14 new workspaces | markets.internals · markets.playbooks · research.fundamentals · research.factors · decisions.sizing · decisions.premortem · portfolio.hedging · portfolio.ledger · review.patterns · review.coach · command.briefing · system.slo · system.releases · system.audits |
 Unlike the legacy "P9 preservation registry" (which passed by checking that a function existed in the same file), every claim here is browser-verified: 38 workspaces click-tested, 0 console errors.
 
 | Legacy route(s) | Capability | V11.1 home |
